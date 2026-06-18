@@ -13,7 +13,13 @@ This repository is in early scaffolding. The project intent and phased roadmap l
 - minimal dependencies
 - security-conscious defaults
 - framework-agnostic API surface
-- default config discovery from `configs.yaml` in the deployment root, with env override support
+- default config discovery from `configs.yaml` in the deployment root, with `FORM_MAILER_CONFIG_PATH` override support
+- `FORM_MAILER_CONFIG_FILE` remains accepted for compatibility
+
+## Configuration
+
+`form-mailer` looks for `configs.yaml` in the deployment root by default. If you mount config elsewhere, set `FORM_MAILER_CONFIG_PATH` to the full path. `FORM_MAILER_CONFIG_FILE` is still accepted as a compatibility alias.
+The loader also accepts a legacy `config.yaml` in the deployment root if `configs.yaml` is not present.
 
 ## Quick Start
 

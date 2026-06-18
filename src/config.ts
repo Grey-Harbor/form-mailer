@@ -47,42 +47,35 @@ function parseEnvRecipientMap(value: string | undefined): Record<string, string 
   return map;
 }
 
-export async function loadConfigFromFile(path: string): Promise<FormMailerConfig> {
-  const raw = await readFile(path, 'utf8');
-  return parseConfigRecord(parseSimpleYaml(raw));
+function applyEnvOverrides(base: FormMailerConfig, env: NodeJS.ProcessEnv): FormMailerConfig {
+  const baseFrom = resolveFromAddress(base.from);
+  const from =
+    env.FORM_MAILER_FROM || env.FORM_MAILER_SENDER_EMAIL
+      ? resolveFromAddress({
+          email: env.FORM_MAILER_FROM ?? env.FORM_MAILER_SENDER_EMAIL ?? baseFrom.email,
+          ...(env.FORM_MAILER_SENDER_NAME || baseFrom.name
+            ? { name: env.FORM_MAILER_SENDER_NAME ?? baseFrom.name }
+            : {}),
+        })
+      : baseFrom;
+
+  return {
+    ...base,
+    from,
+    to: env.FORM_MAILER_TO ? normalizeAddressList(env.FORM_MAILER_TO) : base.to,
+    subject: env.FORM_MAILER_SUBJECT ?? base.subject,
+    replyTo: env.FORM_MAILER_REPLY_TO ?? base.replyTo,
+    honeypotFieldName: env.FORM_MAILER_HONEYPOT_FIELD ?? base.honeypotFieldName,
+    maxPayloadBytes: env.FORM_MAILER_MAX_PAYLOAD_BYTES
+      ? Number(env.FORM_MAILER_MAX_PAYLOAD_BYTES)
+      : base.maxPayloadBytes,
+    originAllowlist: env.FORM_MAILER_ORIGIN_ALLOWLIST
+      ? env.FORM_MAILER_ORIGIN_ALLOWLIST.split(',').map((entry) => entry.trim()).filter(Boolean)
+      : base.originAllowlist,
+  };
 }
 
-export async function loadConfigFromEnv(env: NodeJS.ProcessEnv = process.env): Promise<FormMailerConfig> {
-  const filePath = resolveConfigPath(env);
-  if (filePath) {
-    const fileConfig = await loadConfigFromFile(filePath);
-    const fileFrom = resolveFromAddress(fileConfig.from);
-    return {
-      ...fileConfig,
-      from:
-        env.FORM_MAILER_FROM || env.FORM_MAILER_SENDER_EMAIL
-          ? resolveFromAddress(
-              {
-                email: env.FORM_MAILER_FROM ?? env.FORM_MAILER_SENDER_EMAIL ?? fileFrom.email,
-                ...(env.FORM_MAILER_SENDER_NAME || fileFrom.name
-                  ? { name: env.FORM_MAILER_SENDER_NAME ?? fileFrom.name }
-                  : {}),
-              },
-            )
-          : fileFrom,
-      to: env.FORM_MAILER_TO ? normalizeAddressList(env.FORM_MAILER_TO) : fileConfig.to,
-      subject: env.FORM_MAILER_SUBJECT ?? fileConfig.subject,
-      replyTo: env.FORM_MAILER_REPLY_TO ?? fileConfig.replyTo,
-      honeypotFieldName: env.FORM_MAILER_HONEYPOT_FIELD ?? fileConfig.honeypotFieldName,
-      maxPayloadBytes: env.FORM_MAILER_MAX_PAYLOAD_BYTES
-        ? Number(env.FORM_MAILER_MAX_PAYLOAD_BYTES)
-        : fileConfig.maxPayloadBytes,
-      originAllowlist: env.FORM_MAILER_ORIGIN_ALLOWLIST
-        ? env.FORM_MAILER_ORIGIN_ALLOWLIST.split(',').map((entry) => entry.trim()).filter(Boolean)
-      : fileConfig.originAllowlist,
-    };
-  }
-
+function buildInlineConfig(env: NodeJS.ProcessEnv): FormMailerConfig {
   return parseConfigRecord({
     from:
       env.FORM_MAILER_FROM || env.FORM_MAILER_SENDER_EMAIL
@@ -117,6 +110,20 @@ export async function loadConfigFromEnv(env: NodeJS.ProcessEnv = process.env): P
       ? Number(env.FORM_MAILER_MAX_PAYLOAD_BYTES)
       : undefined,
   });
+}
+
+export async function loadConfigFromFile(path: string): Promise<FormMailerConfig> {
+  const raw = await readFile(path, 'utf8');
+  return parseConfigRecord(parseSimpleYaml(raw));
+}
+
+export async function loadConfigFromEnv(env: NodeJS.ProcessEnv = process.env): Promise<FormMailerConfig> {
+  const filePath = resolveConfigPath(env);
+  if (filePath) {
+    return applyEnvOverrides(await loadConfigFromFile(filePath), env);
+  }
+
+  return buildInlineConfig(env);
 }
 
 export function createTransportFromConfig(config: FormMailerConfig) {
