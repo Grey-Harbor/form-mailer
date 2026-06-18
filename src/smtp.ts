@@ -9,6 +9,12 @@ interface SmtpLineReader {
   nextLine(): Promise<string>;
 }
 
+export interface SmtpTransportHooks {
+  connect?: (config: SmtpConnectionConfig) => Promise<net.Socket | tls.TLSSocket>;
+  upgradeToTls?: (socket: net.Socket, config: SmtpConnectionConfig) => Promise<tls.TLSSocket>;
+  messageIdFactory?: () => string;
+}
+
 function createLineReader(socket: net.Socket | tls.TLSSocket): SmtpLineReader {
   let buffer = '';
   const waiters: Array<(line: string) => void> = [];
@@ -166,10 +172,13 @@ function escapeDotStuffing(message: string): string {
   return message.replace(/(^|\r\n)\./g, '$1..');
 }
 
-export function createSmtpTransport(config: SmtpConnectionConfig): MailTransport {
+export function createSmtpTransport(
+  config: SmtpConnectionConfig,
+  hooks: SmtpTransportHooks = {},
+): MailTransport {
   return {
     async send(message: OutgoingMail): Promise<TransportSendResult> {
-      const socket = await connectSocket(config);
+      const socket = await (hooks.connect ?? connectSocket)(config);
       let activeSocket: net.Socket | tls.TLSSocket = socket;
       let reader = createLineReader(activeSocket);
       let greeted = false;
@@ -181,7 +190,7 @@ export function createSmtpTransport(config: SmtpConnectionConfig): MailTransport
 
         if (config.starttls && !config.secure) {
           await expectCode(reader, activeSocket, 'STARTTLS', 220);
-          activeSocket = await upgradeToTls(socket, config);
+          activeSocket = await (hooks.upgradeToTls ?? upgradeToTls)(socket as net.Socket, config);
           reader = createLineReader(activeSocket);
           await expectCode(reader, activeSocket, `EHLO ${config.tls?.servername ?? config.host ?? 'localhost'}`, [250]);
         }
@@ -213,7 +222,7 @@ export function createSmtpTransport(config: SmtpConnectionConfig): MailTransport
         activeSocket.end();
 
         return {
-          messageId: `<${randomUUID()}@form-mailer.local>`,
+          messageId: hooks.messageIdFactory?.() ?? `<${randomUUID()}@form-mailer.local>`,
         };
       } catch (error) {
         if (greeted) {
