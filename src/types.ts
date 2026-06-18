@@ -5,46 +5,46 @@ export type SubmissionValue = SubmissionPrimitive | SubmissionPrimitive[];
 export type SubmissionFields = Record<string, SubmissionValue>;
 
 export interface FormMailSubmission<TFields extends SubmissionFields = SubmissionFields> {
-  name?: string;
-  email?: string;
-  subject?: string;
-  message?: string;
-  recipientKey?: string;
-  origin?: string;
-  honeypot?: string;
-  fields?: TFields;
+  name?: string | undefined;
+  email?: string | undefined;
+  subject?: string | undefined;
+  message?: string | undefined;
+  recipientKey?: string | undefined;
+  origin?: string | undefined;
+  honeypot?: string | undefined;
+  fields?: TFields | undefined;
 }
 
 export interface MailAddress {
-  name?: string;
+  name?: string | undefined;
   email: string;
 }
 
 export interface SmtpConnectionConfig {
-  host?: string;
-  port?: number;
-  secure?: boolean;
-  starttls?: boolean;
-  username?: string;
-  password?: string;
+  host?: string | undefined;
+  port?: number | undefined;
+  secure?: boolean | undefined;
+  starttls?: boolean | undefined;
+  username?: string | undefined;
+  password?: string | undefined;
   tls?: {
-    rejectUnauthorized?: boolean;
-    servername?: string;
+    rejectUnauthorized?: boolean | undefined;
+    servername?: string | undefined;
   };
 }
 
 export interface FormMailerConfig {
   from: string | MailAddress;
-  to?: string | string[];
-  recipientMap?: Record<string, string | string[]>;
-  subject?: string | ((submission: FormMailSubmission) => string);
-  replyTo?: string | ((submission: FormMailSubmission) => string | undefined);
-  originAllowlist?: string[];
-  honeypotFieldName?: string;
-  requiredFields?: string[];
-  maxPayloadBytes?: number;
-  transport?: MailTransport;
-  smtp?: SmtpConnectionConfig;
+  to?: string | string[] | undefined;
+  recipientMap?: Record<string, string | string[]> | undefined;
+  subject?: string | ((submission: FormMailSubmission) => string) | undefined;
+  replyTo?: string | ((submission: FormMailSubmission) => string | undefined) | undefined;
+  originAllowlist?: string[] | undefined;
+  honeypotFieldName?: string | undefined;
+  requiredFields?: string[] | undefined;
+  maxPayloadBytes?: number | undefined;
+  transport?: MailTransport | undefined;
+  smtp?: SmtpConnectionConfig | undefined;
 }
 
 export interface ValidationIssue {
@@ -66,20 +66,20 @@ export type FormMailerErrorCode =
 
 export interface FormMailerError extends Error {
   code: FormMailerErrorCode;
-  details?: Record<string, unknown>;
+  details?: Record<string, unknown> | undefined;
 }
 
 export interface OutgoingMail {
   from: string;
   to: string[];
-  replyTo?: string;
+  replyTo?: string | undefined;
   subject: string;
   text: string;
-  html?: string;
+  html?: string | undefined;
 }
 
 export interface TransportSendResult {
-  messageId?: string;
+  messageId?: string | undefined;
 }
 
 export interface MailTransport {
@@ -88,7 +88,7 @@ export interface MailTransport {
 
 export interface SendMailResult {
   ok: true;
-  messageId?: string;
+  messageId?: string | undefined;
   envelope: {
     from: string;
     to: string[];
@@ -110,7 +110,7 @@ export interface FormMailer {
 export interface ResolvedFormMailerConfig extends Omit<FormMailerConfig, 'from'> {
   from: MailAddress;
   to: string[];
-  transport?: MailTransport;
+  transport?: MailTransport | undefined;
   maxPayloadBytes: number;
   honeypotFieldName: string;
   requiredFields: string[];

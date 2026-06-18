@@ -47,8 +47,8 @@ export function parseSimpleYaml(source: string): ParsedYaml {
       continue;
     }
 
-    const indent = rawLine.match(/^ */)?.[0].length ?? 0;
-    while (stack.length > 1 && indent <= stack[stack.length - 1].indent) {
+  const indent = rawLine.match(/^ */)?.[0].length ?? 0;
+    while (stack.length > 1 && indent <= stack[stack.length - 1]!.indent) {
       stack.pop();
     }
 
@@ -152,9 +152,10 @@ function parseSmtpConfig(value: unknown): SmtpConnectionConfig {
     username: (smtp.username as string | undefined) ?? (smtp.uname as string | undefined),
     password: (smtp.password as string | undefined) ?? (smtp.token as string | undefined),
     tls: {
-      servername: (smtp.servername as string | undefined) ?? parsedUrl?.hostname,
-      rejectUnauthorized:
-        typeof smtp.rejectUnauthorized === 'boolean' ? smtp.rejectUnauthorized : undefined,
+      ...(typeof smtp.rejectUnauthorized === 'boolean'
+        ? { rejectUnauthorized: smtp.rejectUnauthorized }
+        : {}),
+      ...(smtp.servername || parsedUrl?.hostname ? { servername: (smtp.servername as string | undefined) ?? parsedUrl?.hostname } : {}),
     },
   };
 }
@@ -213,7 +214,7 @@ export function normalizeConfig(source: Record<string, unknown>): FormMailerConf
   const smtp = parseSmtpConfig(source.smtp);
   const fromSource = (source.from as string | MailAddress | undefined) ?? {
     email: String(source.senderEmail ?? ''),
-    name: source.senderName ? String(source.senderName) : undefined,
+    ...(source.senderName ? { name: String(source.senderName) } : {}),
   };
   const from = resolveFromAddress(fromSource);
   const recipientMap = parseRecipientMap(source.recipientMap ?? source.recipientsMap ?? source.recipients);
@@ -246,15 +247,18 @@ export async function loadConfigFromEnv(env: NodeJS.ProcessEnv = process.env): P
   const filePath = resolveConfigPath(env);
   if (filePath) {
     const fileConfig = await loadConfigFromFile(filePath);
+    const fileFrom = resolveFromAddress(fileConfig.from);
     return {
       ...fileConfig,
       from:
         env.FORM_MAILER_FROM || env.FORM_MAILER_SENDER_EMAIL
           ? resolveFromAddress({
-              email: env.FORM_MAILER_FROM ?? env.FORM_MAILER_SENDER_EMAIL ?? fileConfig.from.email,
-              name: env.FORM_MAILER_SENDER_NAME ?? fileConfig.from.name,
+              email: env.FORM_MAILER_FROM ?? env.FORM_MAILER_SENDER_EMAIL ?? fileFrom.email,
+              ...(env.FORM_MAILER_SENDER_NAME || fileFrom.name
+                ? { name: env.FORM_MAILER_SENDER_NAME ?? fileFrom.name }
+                : {}),
             })
-          : fileConfig.from,
+          : fileFrom,
       to: env.FORM_MAILER_TO ? normalizeAddressList(env.FORM_MAILER_TO) : fileConfig.to,
       subject: env.FORM_MAILER_SUBJECT ?? fileConfig.subject,
       replyTo: env.FORM_MAILER_REPLY_TO ?? fileConfig.replyTo,
@@ -273,7 +277,7 @@ export async function loadConfigFromEnv(env: NodeJS.ProcessEnv = process.env): P
       env.FORM_MAILER_FROM || env.FORM_MAILER_SENDER_EMAIL
         ? {
             email: env.FORM_MAILER_FROM ?? env.FORM_MAILER_SENDER_EMAIL ?? '',
-            name: env.FORM_MAILER_SENDER_NAME,
+            ...(env.FORM_MAILER_SENDER_NAME ? { name: env.FORM_MAILER_SENDER_NAME } : {}),
           }
         : undefined,
     to: env.FORM_MAILER_TO,

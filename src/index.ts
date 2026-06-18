@@ -34,7 +34,7 @@ export function createFormMailer(config: FormMailerConfig): FormMailer {
         const result = await transport.send(message);
         return {
           ok: true as const,
-          messageId: result.messageId,
+          ...(result.messageId ? { messageId: result.messageId } : {}),
           envelope: {
             from: resolved.from.email,
             to: message.to,

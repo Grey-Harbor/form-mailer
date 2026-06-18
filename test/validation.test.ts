@@ -1,5 +1,5 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
+import { test } from 'node:test';
+import { strict as assert } from 'node:assert';
 import { validateSubmission } from '../src/validation.js';
 
 test('rejects invalid email addresses', () => {
@@ -21,4 +21,3 @@ test('accepts a minimal valid submission', () => {
   assert.equal(result.ok, true);
   assert.equal(result.issues.length, 0);
 });
-

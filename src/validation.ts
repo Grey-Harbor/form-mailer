@@ -177,7 +177,7 @@ export function resolveRecipients(
   });
 }
 
-export function resolveFromAddress(from: string | MailAddress): MailAddress {
+export function resolveFromAddress(from: string | MailAddress | { email: string; name?: string | undefined }): MailAddress {
   if (typeof from === 'string') {
     const email = extractEmailAddress(from);
     if (!isValidEmailAddress(email)) {
@@ -193,7 +193,7 @@ export function resolveFromAddress(from: string | MailAddress): MailAddress {
 
   return {
     email: sanitizeHeaderValue(email),
-    name: from.name ? sanitizeHeaderValue(from.name) : undefined,
+    ...(from.name ? { name: sanitizeHeaderValue(from.name) } : {}),
   };
 }
 
@@ -203,13 +203,13 @@ export function resolveConfig(config: FormMailerConfig): ResolvedFormMailerConfi
   }
 
   const from = resolveFromAddress(config.from);
-  const to = resolveRecipients({ recipientKey: undefined }, config);
+  const to = resolveRecipients({}, config);
 
   if (to.length === 0) {
     throw createFormMailerError('config_error', 'At least one recipient must be configured.');
   }
 
-  return {
+  const resolved: ResolvedFormMailerConfig = {
     ...config,
     from,
     to,
@@ -217,6 +217,8 @@ export function resolveConfig(config: FormMailerConfig): ResolvedFormMailerConfi
     honeypotFieldName: config.honeypotFieldName ?? 'website',
     requiredFields: config.requiredFields ?? [],
   };
+
+  return resolved;
 }
 
 export function validationFailureError(issues: ValidationIssue[]): FormMailerError {

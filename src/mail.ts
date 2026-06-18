@@ -80,10 +80,10 @@ export function buildMailMessage(
   return {
     from,
     to: recipients,
-    replyTo,
+    ...(replyTo ? { replyTo } : {}),
     subject,
     text,
-    html,
+    ...(html ? { html } : {}),
   };
 }
 
