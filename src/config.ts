@@ -47,7 +47,7 @@ export function parseSimpleYaml(source: string): ParsedYaml {
       continue;
     }
 
-  const indent = rawLine.match(/^ */)?.[0].length ?? 0;
+    const indent = rawLine.match(/^ */)?.[0].length ?? 0;
     while (stack.length > 1 && indent <= stack[stack.length - 1]!.indent) {
       stack.pop();
     }
@@ -294,7 +294,7 @@ export async function loadConfigFromEnv(env: NodeJS.ProcessEnv = process.env): P
     },
     recipientMap: env.FORM_MAILER_RECIPIENTS ? parseRecipientMap(env.FORM_MAILER_RECIPIENTS) : undefined,
     subject: env.FORM_MAILER_SUBJECT,
-      replyTo: env.FORM_MAILER_REPLY_TO,
+    replyTo: env.FORM_MAILER_REPLY_TO,
     originAllowlist: env.FORM_MAILER_ORIGIN_ALLOWLIST
       ? env.FORM_MAILER_ORIGIN_ALLOWLIST.split(',').map((entry) => entry.trim()).filter(Boolean)
       : undefined,
