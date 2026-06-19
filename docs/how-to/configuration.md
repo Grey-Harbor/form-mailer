@@ -23,26 +23,32 @@ If the dotenv file contains `FORM_MAILER_SMTP_PASSWORD`, `form-mailer` logs a wa
 
 ## Environment variables
 
-Common environment variables include:
+Minimum setup usually needs:
 
 - `FORM_MAILER_FROM`: sender mailbox used on the outgoing message
-- `FORM_MAILER_TO`: default recipient list used when no `recipientKey` route is matched
-- `FORM_MAILER_RECIPIENT_MAP`: JSON object that maps `recipientKey` values to recipient lists
-- `FORM_MAILER_RECIPIENTS`: legacy shorthand for named recipient routes in `key:email` form
+- `FORM_MAILER_TO` or `FORM_MAILER_RECIPIENT_MAP`: where messages should be delivered
 - `FORM_MAILER_SMTP_HOST`: SMTP server hostname
-- `FORM_MAILER_SMTP_PORT`: optional SMTP server port
-- `FORM_MAILER_SMTP_SECURE`: set to `true` for implicit TLS
-- `FORM_MAILER_SMTP_STARTTLS`: set to `true` to upgrade the connection with STARTTLS
-- `FORM_MAILER_SMTP_SERVERNAME`: optional TLS server name override
-- `FORM_MAILER_SMTP_USERNAME`: SMTP username
-- `FORM_MAILER_SMTP_PASSWORD`: SMTP password or token
-- `FORM_MAILER_SUBJECT`: default subject line for outgoing mail
-- `FORM_MAILER_REPLY_TO`: reply-to header override
-- `FORM_MAILER_ORIGIN_ALLOWLIST`: comma-separated list of allowed submission origins
-- `FORM_MAILER_HONEYPOT_FIELD`: honeypot field name used to trap bots
-- `FORM_MAILER_REQUIRED_FIELDS`: comma-separated list of required submission fields
-- `FORM_MAILER_MAX_PAYLOAD_BYTES`: max submission size in bytes
-- `FORM_MAILER_ENV_PATH`: optional dotenv file path to load before process env
+
+Everything else is optional:
+
+- `FORM_MAILER_TO` (optional): default recipient list used when no `recipientKey` route is matched
+- `FORM_MAILER_RECIPIENT_MAP` (optional): JSON object that maps `recipientKey` values to recipient lists
+- `FORM_MAILER_RECIPIENTS` (optional): legacy shorthand for named recipient routes in `key:email` form
+- `FORM_MAILER_SMTP_PORT` (optional): SMTP server port
+- `FORM_MAILER_SMTP_SECURE` (optional): set to `true` for implicit TLS
+- `FORM_MAILER_SMTP_STARTTLS` (optional): set to `true` to upgrade the connection with STARTTLS
+- `FORM_MAILER_SMTP_SERVERNAME` (optional): TLS server name override
+- `FORM_MAILER_SMTP_USERNAME` (optional): SMTP username
+- `FORM_MAILER_SMTP_PASSWORD` (optional): SMTP password or token
+- `FORM_MAILER_SUBJECT` (optional): default subject line for outgoing mail
+- `FORM_MAILER_REPLY_TO` (optional): reply-to header override
+- `FORM_MAILER_ORIGIN_ALLOWLIST` (optional): comma-separated list of allowed submission origins
+- `FORM_MAILER_HONEYPOT_FIELD` (optional): honeypot field name used to trap bots
+- `FORM_MAILER_REQUIRED_FIELDS` (optional): comma-separated list of required submission fields
+- `FORM_MAILER_MAX_PAYLOAD_BYTES` (optional): max submission size in bytes
+- `FORM_MAILER_ENV_PATH` (optional): dotenv file path to load before process env
+
+If you are using a local SMTP relay or a development server that does not require auth, you can omit the username and password values.
 
 ## Recipient mapping
 
