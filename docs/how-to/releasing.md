@@ -28,6 +28,12 @@ Use Conventional Commits to decide the next semver bump:
 
 The CI publish job should only run for tag pushes that match `v*`.
 
+## GitHub Actions secret
+
+The publish job expects an npm token stored as the `NPM_TOKEN` repository secret.
+
+That token is injected into the publish step as `NODE_AUTH_TOKEN`, which is what `npm publish` uses for registry authentication in GitHub Actions.
+
 ## CI checks
 
 For both branch and tag runs, CI should:
