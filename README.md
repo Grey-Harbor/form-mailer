@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/@greyharbor%2Fform-mailer.svg)](https://badge.fury.io/js/@greyharbor%2Fform-mailer)
+
 # form-mailer
 
 `form-mailer` is a compact way to turn form submissions into email without dragging a full mail platform into your app.
