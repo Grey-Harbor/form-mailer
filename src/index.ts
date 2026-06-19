@@ -4,7 +4,7 @@ import { createFormMailerError, isFormMailerError } from './errors.js';
 import { validateSubmission, validationFailureError, resolveConfig } from './validation.js';
 import type { FormMailer, FormMailerConfig, FormMailSubmission } from './types.js';
 
-export { loadConfigFromEnv, loadConfigFromFile } from './config.js';
+export { loadConfigFromEnv } from './config.js';
 export { createFormMailerError, isFormMailerError } from './errors.js';
 export { createSmtpTransport } from './smtp.js';
 export type {

@@ -7,7 +7,6 @@ The package root exports the supported entrypoints:
 - `createFormMailer`
 - `createSmtpTransport`
 - `loadConfigFromEnv`
-- `loadConfigFromFile`
 - `createFormMailerError`
 - `isFormMailerError`
 
@@ -48,6 +47,21 @@ Creates a mailer instance with:
 - `maxPayloadBytes`
 - `transport`
 - `smtp`
+
+## Environment loading
+
+`loadConfigFromEnv()` reads the active process environment directly.
+
+If `FORM_MAILER_ENV_PATH` is set, it loads a dotenv-style file first and then lets process env values override the file defaults.
+If the file contains `FORM_MAILER_SMTP_PASSWORD`, the loader logs a warning because runtime environment variables are the preferred place for secrets.
+
+## Recipient mapping
+
+`recipientMap` is an optional routing table keyed by `FormMailSubmission.recipientKey`.
+
+- if the submission sets `recipientKey` and the key exists in `recipientMap`, the mapped recipients are used
+- otherwise the package falls back to `to`
+- `to` is still the default recipient list for submissions that do not set a route key
 
 ## Result shape
 

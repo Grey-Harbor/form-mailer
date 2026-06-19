@@ -8,35 +8,66 @@ This guide shows the configuration options that matter in practice.
 
 - inline code
 - environment variables
-- a config file in the deployment root
+- an optional dotenv-style file loaded through `FORM_MAILER_ENV_PATH`
 
-## Config file discovery
+## Env loading
 
-By default, the loader looks for `configs.yaml` in the deployment root.
+By default, `form-mailer` reads the active process environment directly.
 
-If `configs.yaml` is not present, a legacy `config.yaml` file is also accepted.
+If you want to share a common set of defaults for a deployment or local app shell, set
+`FORM_MAILER_ENV_PATH` to a dotenv-style file path.
 
-If the config is mounted somewhere else, set `FORM_MAILER_CONFIG_PATH` to the full path.
-`FORM_MAILER_CONFIG_FILE` is still accepted as a compatibility alias.
+Values from the actual process environment override values loaded from the file.
+
+If the dotenv file contains `FORM_MAILER_SMTP_PASSWORD`, `form-mailer` logs a warning because secrets are safer in live environment variables than in shared files.
 
 ## Environment variables
 
 Common environment variables include:
 
-- `FORM_MAILER_FROM`
-- `FORM_MAILER_TO`
-- `FORM_MAILER_SMTP_HOST`
-- `FORM_MAILER_SMTP_USERNAME`
-- `FORM_MAILER_SMTP_PASSWORD`
-- `FORM_MAILER_CONFIG_PATH`
+- `FORM_MAILER_FROM`: sender mailbox used on the outgoing message
+- `FORM_MAILER_TO`: default recipient list used when no `recipientKey` route is matched
+- `FORM_MAILER_RECIPIENT_MAP`: JSON object that maps `recipientKey` values to recipient lists
+- `FORM_MAILER_RECIPIENTS`: legacy shorthand for named recipient routes in `key:email` form
+- `FORM_MAILER_SMTP_HOST`: SMTP server hostname
+- `FORM_MAILER_SMTP_PORT`: optional SMTP server port
+- `FORM_MAILER_SMTP_SECURE`: set to `true` for implicit TLS
+- `FORM_MAILER_SMTP_STARTTLS`: set to `true` to upgrade the connection with STARTTLS
+- `FORM_MAILER_SMTP_SERVERNAME`: optional TLS server name override
+- `FORM_MAILER_SMTP_USERNAME`: SMTP username
+- `FORM_MAILER_SMTP_PASSWORD`: SMTP password or token
+- `FORM_MAILER_SUBJECT`: default subject line for outgoing mail
+- `FORM_MAILER_REPLY_TO`: reply-to header override
+- `FORM_MAILER_ORIGIN_ALLOWLIST`: comma-separated list of allowed submission origins
+- `FORM_MAILER_HONEYPOT_FIELD`: honeypot field name used to trap bots
+- `FORM_MAILER_REQUIRED_FIELDS`: comma-separated list of required submission fields
+- `FORM_MAILER_MAX_PAYLOAD_BYTES`: max submission size in bytes
+- `FORM_MAILER_ENV_PATH`: optional dotenv file path to load before process env
 
 ## Recipient mapping
 
-You can map logical form destinations to email recipients by setting `recipientMap` in code or the equivalent YAML structure in config.
+`recipientMap` is a routing table, not a replacement for the default recipient list.
+
+Use it when different form destinations should go to different inboxes:
+
+- a submission with `recipientKey: "support"` uses the mapped support recipients
+- a submission with no `recipientKey` uses `to`
+- if a `recipientKey` does not match any map entry, `to` is used as the fallback
+
+Example environment value:
+
+```bash
+FORM_MAILER_RECIPIENT_MAP='{"support":["support@example.com"],"sales":["sales@example.com","ops@example.com"]}'
+```
+
+Legacy shorthand is still accepted for small setups:
+
+```bash
+FORM_MAILER_RECIPIENTS='support:support@example.com,sales:sales@example.com'
+```
 
 ## Practical defaults
 
 - keep `from` as a real mailbox
 - use `starttls` for SMTP hosts that support it
 - keep `replyTo` aligned with the submitter email when you want replies to go back to the user
-

@@ -64,3 +64,28 @@ test('rejects invalid submissions before transport work begins', async () => {
     assert.equal(result.error.code, 'validation_error');
   }
 });
+
+test('routes submissions through recipientMap when recipientKey is set', async () => {
+  let captured: OutgoingMail | undefined;
+  const mailer = createFormMailer({
+    from: 'sender@example.com',
+    to: ['default@example.com'],
+    recipientMap: {
+      support: 'support@example.com',
+      sales: ['sales@example.com', 'ops@example.com'],
+    },
+    transport: createMockTransport(async (message) => {
+      captured = message;
+      return { messageId: 'route-123' };
+    }),
+  });
+
+  const result = await mailer.send({
+    email: 'visitor@example.com',
+    recipientKey: 'sales',
+    message: 'Route me',
+  });
+
+  assert.equal(result.ok, true);
+  assert.deepEqual(captured?.to, ['sales@example.com', 'ops@example.com']);
+});

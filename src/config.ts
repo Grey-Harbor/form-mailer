@@ -1,33 +1,10 @@
 import { readFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
 import { createFormMailerError } from './errors.js';
 import { createSmtpTransport } from './smtp.js';
 import type { FormMailerConfig } from './types.js';
-import { parseConfigRecord, parseSimpleYaml } from './config-parser.js';
 import { normalizeAddressList, resolveFromAddress } from './validation.js';
 
-function resolveConfigPath(env: NodeJS.ProcessEnv): string | undefined {
-  const explicitPath = env.FORM_MAILER_CONFIG_PATH ?? env.FORM_MAILER_CONFIG_FILE;
-  if (explicitPath) {
-    return explicitPath;
-  }
-
-  const cwd = process.cwd();
-  const deploymentRootConfig = join(cwd, 'configs.yaml');
-  if (existsSync(deploymentRootConfig)) {
-    return deploymentRootConfig;
-  }
-
-  const legacyConfig = join(cwd, 'config.yaml');
-  if (existsSync(legacyConfig)) {
-    return legacyConfig;
-  }
-
-  return undefined;
-}
-
-function parseEnvRecipientMap(value: string | undefined): Record<string, string | string[]> | undefined {
+function parseLegacyRecipientMap(value: string | undefined): Record<string, string | string[]> | undefined {
   if (!value) {
     return undefined;
   }
@@ -47,47 +24,201 @@ function parseEnvRecipientMap(value: string | undefined): Record<string, string 
   return map;
 }
 
-function applyEnvOverrides(base: FormMailerConfig, env: NodeJS.ProcessEnv): FormMailerConfig {
-  const baseFrom = resolveFromAddress(base.from);
-  const from =
-    env.FORM_MAILER_FROM || env.FORM_MAILER_SENDER_EMAIL
-      ? resolveFromAddress({
-          email: env.FORM_MAILER_FROM ?? env.FORM_MAILER_SENDER_EMAIL ?? baseFrom.email,
-          ...(env.FORM_MAILER_SENDER_NAME || baseFrom.name
-            ? { name: env.FORM_MAILER_SENDER_NAME ?? baseFrom.name }
-            : {}),
-        })
-      : baseFrom;
+function normalizeRecipientMapValue(value: unknown): string[] {
+  if (typeof value === 'string') {
+    return normalizeAddressList(value);
+  }
 
-  return {
-    ...base,
-    from,
-    to: env.FORM_MAILER_TO ? normalizeAddressList(env.FORM_MAILER_TO) : base.to,
-    subject: env.FORM_MAILER_SUBJECT ?? base.subject,
-    replyTo: env.FORM_MAILER_REPLY_TO ?? base.replyTo,
-    honeypotFieldName: env.FORM_MAILER_HONEYPOT_FIELD ?? base.honeypotFieldName,
-    maxPayloadBytes: env.FORM_MAILER_MAX_PAYLOAD_BYTES
-      ? Number(env.FORM_MAILER_MAX_PAYLOAD_BYTES)
-      : base.maxPayloadBytes,
-    originAllowlist: env.FORM_MAILER_ORIGIN_ALLOWLIST
-      ? env.FORM_MAILER_ORIGIN_ALLOWLIST.split(',').map((entry) => entry.trim()).filter(Boolean)
-      : base.originAllowlist,
-  };
+  if (Array.isArray(value)) {
+    return value.flatMap((entry) => normalizeAddressList(String(entry)));
+  }
+
+  throw createFormMailerError('config_error', 'Recipient map values must be strings or string arrays.');
 }
 
-function buildInlineConfig(env: NodeJS.ProcessEnv): FormMailerConfig {
-  return parseConfigRecord({
-    from:
-      env.FORM_MAILER_FROM || env.FORM_MAILER_SENDER_EMAIL
-        ? {
-            email: env.FORM_MAILER_FROM ?? env.FORM_MAILER_SENDER_EMAIL ?? '',
-            ...(env.FORM_MAILER_SENDER_NAME ? { name: env.FORM_MAILER_SENDER_NAME } : {}),
-          }
-        : undefined,
-    to: env.FORM_MAILER_TO,
+function parseRecipientMapObject(value: unknown): Record<string, string | string[]> | undefined {
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+
+  if (typeof value !== 'object' || Array.isArray(value)) {
+    throw createFormMailerError('config_error', 'Recipient map must be a JSON object.');
+  }
+
+  const map: Record<string, string[]> = {};
+  for (const [key, entry] of Object.entries(value as Record<string, unknown>)) {
+    const trimmedKey = key.trim();
+    if (!trimmedKey) {
+      continue;
+    }
+
+    const recipients = normalizeRecipientMapValue(entry);
+    if (recipients.length > 0) {
+      map[trimmedKey] = recipients;
+    }
+  }
+
+  return Object.keys(map).length > 0 ? map : undefined;
+}
+
+function parseRecipientMapEnv(env: NodeJS.ProcessEnv): Record<string, string | string[]> | undefined {
+  const jsonMap = env.FORM_MAILER_RECIPIENT_MAP?.trim();
+  if (jsonMap) {
+    try {
+      return parseRecipientMapObject(JSON.parse(jsonMap));
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        throw createFormMailerError('config_error', 'FORM_MAILER_RECIPIENT_MAP must be valid JSON.');
+      }
+      throw error;
+    }
+  }
+
+  return parseLegacyRecipientMap(env.FORM_MAILER_RECIPIENTS);
+}
+
+function splitCommaList(value: string | undefined): string[] | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const entries = value
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+  return entries.length > 0 ? entries : undefined;
+}
+
+function parseQuotedDotenvValue(value: string, quote: '"' | "'"): string {
+  if (!value.endsWith(quote)) {
+    throw createFormMailerError('config_error', 'Malformed dotenv value.');
+  }
+
+  const content = value.slice(1, -1);
+  if (quote === "'") {
+    return content;
+  }
+
+  return content
+    .replace(/\\n/g, '\n')
+    .replace(/\\r/g, '\r')
+    .replace(/\\t/g, '\t')
+    .replace(/\\"/g, '"')
+    .replace(/\\\\/g, '\\');
+}
+
+function parseDotenvLine(line: string, lineNumber: number): [string, string] | undefined {
+  const trimmed = line.trim();
+  if (!trimmed || trimmed.startsWith('#')) {
+    return undefined;
+  }
+
+  const withoutExport = trimmed.startsWith('export ') ? trimmed.slice(7).trimStart() : trimmed;
+  const equalsIndex = withoutExport.indexOf('=');
+  if (equalsIndex <= 0) {
+    throw createFormMailerError('config_error', `Malformed dotenv line ${lineNumber}.`);
+  }
+
+  const key = withoutExport.slice(0, equalsIndex).trim();
+  if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(key)) {
+    throw createFormMailerError('config_error', `Invalid dotenv key on line ${lineNumber}.`);
+  }
+
+  let value = withoutExport.slice(equalsIndex + 1).trimStart();
+  if (!value) {
+    return [key, ''];
+  }
+
+  if (value.startsWith('"') || value.startsWith("'")) {
+    const quote = value[0] as '"' | "'";
+    let cursor = 1;
+    let escaped = false;
+    while (cursor < value.length) {
+      const char = value[cursor];
+      if (quote === '"' && char === '\\' && !escaped) {
+        escaped = true;
+        cursor += 1;
+        continue;
+      }
+      if (char === quote && !escaped) {
+        const remainder = value.slice(cursor + 1).trim();
+        if (remainder && !remainder.startsWith('#')) {
+          throw createFormMailerError('config_error', `Malformed dotenv line ${lineNumber}.`);
+        }
+        return [key, parseQuotedDotenvValue(value.slice(0, cursor + 1), quote)];
+      }
+      escaped = false;
+      cursor += 1;
+    }
+
+    throw createFormMailerError('config_error', `Malformed dotenv line ${lineNumber}.`);
+  }
+
+  const commentIndex = value.search(/\s+#/);
+  if (commentIndex !== -1) {
+    value = value.slice(0, commentIndex).trimEnd();
+  }
+
+  return [key, value];
+}
+
+function parseDotenvFile(source: string): Record<string, string> {
+  const env: Record<string, string> = {};
+  const lines = source.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').split('\n');
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const entry = parseDotenvLine(lines[index] ?? '', index + 1);
+    if (!entry) {
+      continue;
+    }
+    const [key, value] = entry;
+    env[key] = value;
+  }
+
+  return env;
+}
+
+function warnIfSecretIsInEnvFile(fileEnv: Record<string, string>): void {
+  if (fileEnv.FORM_MAILER_SMTP_PASSWORD) {
+    console.warn(
+      'form-mailer: FORM_MAILER_SMTP_PASSWORD was loaded from FORM_MAILER_ENV_PATH. ' +
+        'This is a security risk; prefer supplying secrets through the live environment instead.',
+    );
+  }
+}
+
+function mergeEnvironments(fileEnv: Record<string, string>, runtimeEnv: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
+  const merged: NodeJS.ProcessEnv = { ...fileEnv };
+  for (const [key, value] of Object.entries(runtimeEnv)) {
+    if (value !== undefined) {
+      merged[key] = value;
+    }
+  }
+  return merged;
+}
+
+function parseNumber(value: string | undefined): number | undefined {
+  if (value === undefined || value === '') {
+    return undefined;
+  }
+
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+function buildConfigFromEnv(env: NodeJS.ProcessEnv): FormMailerConfig {
+  const recipientMap = parseRecipientMapEnv(env);
+  const explicitTo = normalizeAddressList(env.FORM_MAILER_TO);
+  const rawFrom = env.FORM_MAILER_FROM ?? env.FORM_MAILER_SENDER_EMAIL;
+
+  return {
+    from: resolveFromAddress({
+      email: rawFrom ?? '',
+      ...(env.FORM_MAILER_SENDER_NAME ? { name: env.FORM_MAILER_SENDER_NAME } : {}),
+    }),
+    to: explicitTo,
     smtp: {
       host: env.FORM_MAILER_SMTP_HOST,
-      port: env.FORM_MAILER_SMTP_PORT ? Number(env.FORM_MAILER_SMTP_PORT) : undefined,
+      port: parseNumber(env.FORM_MAILER_SMTP_PORT),
       secure: env.FORM_MAILER_SMTP_SECURE === 'true',
       starttls: env.FORM_MAILER_SMTP_STARTTLS === 'true',
       username: env.FORM_MAILER_SMTP_USERNAME ?? env.SMTP_UNAME,
@@ -96,34 +227,37 @@ function buildInlineConfig(env: NodeJS.ProcessEnv): FormMailerConfig {
         servername: env.FORM_MAILER_SMTP_SERVERNAME,
       },
     },
-    recipientMap: parseEnvRecipientMap(env.FORM_MAILER_RECIPIENTS),
+    recipientMap,
     subject: env.FORM_MAILER_SUBJECT,
     replyTo: env.FORM_MAILER_REPLY_TO,
-    originAllowlist: env.FORM_MAILER_ORIGIN_ALLOWLIST
-      ? env.FORM_MAILER_ORIGIN_ALLOWLIST.split(',').map((entry) => entry.trim()).filter(Boolean)
-      : undefined,
+    originAllowlist: splitCommaList(env.FORM_MAILER_ORIGIN_ALLOWLIST),
     honeypotFieldName: env.FORM_MAILER_HONEYPOT_FIELD,
-    requiredFields: env.FORM_MAILER_REQUIRED_FIELDS
-      ? env.FORM_MAILER_REQUIRED_FIELDS.split(',').map((entry) => entry.trim()).filter(Boolean)
-      : undefined,
-    maxPayloadBytes: env.FORM_MAILER_MAX_PAYLOAD_BYTES
-      ? Number(env.FORM_MAILER_MAX_PAYLOAD_BYTES)
-      : undefined,
-  });
+    requiredFields: splitCommaList(env.FORM_MAILER_REQUIRED_FIELDS),
+    maxPayloadBytes: parseNumber(env.FORM_MAILER_MAX_PAYLOAD_BYTES),
+  };
 }
 
-export async function loadConfigFromFile(path: string): Promise<FormMailerConfig> {
-  const raw = await readFile(path, 'utf8');
-  return parseConfigRecord(parseSimpleYaml(raw));
+async function loadEnvFile(path: string): Promise<Record<string, string>> {
+  try {
+    const raw = await readFile(path, 'utf8');
+    const parsed = parseDotenvFile(raw);
+    warnIfSecretIsInEnvFile(parsed);
+    return parsed;
+  } catch (error) {
+    if (error instanceof Error && 'code' in error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
+      throw createFormMailerError('config_error', `Environment file not found: ${path}`);
+    }
+
+    throw createFormMailerError('config_error', `Unable to read environment file: ${path}`, {
+      cause: error instanceof Error ? error.message : String(error),
+    });
+  }
 }
 
 export async function loadConfigFromEnv(env: NodeJS.ProcessEnv = process.env): Promise<FormMailerConfig> {
-  const filePath = resolveConfigPath(env);
-  if (filePath) {
-    return applyEnvOverrides(await loadConfigFromFile(filePath), env);
-  }
-
-  return buildInlineConfig(env);
+  const envPath = env.FORM_MAILER_ENV_PATH?.trim();
+  const effectiveEnv = envPath ? mergeEnvironments(await loadEnvFile(envPath), env) : env;
+  return buildConfigFromEnv(effectiveEnv);
 }
 
 export function createTransportFromConfig(config: FormMailerConfig) {

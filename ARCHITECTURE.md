@@ -52,8 +52,7 @@ flowchart LR
 The implementation is organized into small modules:
 
 - `src/index.ts` exposes the public API
-- `src/config.ts` loads configuration and selects transport
-- `src/config-parser.ts` parses the minimal YAML / record shape
+- `src/config.ts` loads environment-based configuration and selects transport
 - `src/validation.ts` validates submissions and resolves message data
 - `src/mail.ts` assembles the outbound message
 - `src/smtp.ts` sends the message over SMTP
@@ -67,7 +66,6 @@ The package root exports the supported entrypoints only:
 - `createFormMailer`
 - `createSmtpTransport`
 - `loadConfigFromEnv`
-- `loadConfigFromFile`
 - `createFormMailerError`
 - `isFormMailerError`
 
@@ -127,42 +125,41 @@ This keeps the package open to custom transports without turning the core API in
 
 ## Configuration Architecture
 
-Configuration can come from three places:
+Configuration can come from two places:
 
 1. inline code
 2. environment variables
-3. a config file
 
-### Config discovery
+### Env loading
 
 The loader resolves configuration in this order:
 
-1. use `FORM_MAILER_CONFIG_PATH` when present
-2. otherwise use `FORM_MAILER_CONFIG_FILE` when present
-3. otherwise look for `configs.yaml` in the deployment root
-4. otherwise accept `config.yaml` as a compatibility fallback
-5. otherwise build config from environment variables
+1. read the active process environment directly
+2. if `FORM_MAILER_ENV_PATH` is present, load that dotenv-style file first
+3. let process env override any file-provided defaults
 
-The deployment root is the current process working directory in the Node.js runtime.
+This means deployments can use either:
 
-This means a deployment can use either:
+- normal environment variables only
+- a shared dotenv file plus runtime overrides
 
-- a `configs.yaml` file at the root of the deployed app
-- a full path to a mounted config file via environment variable
+### Dotenv parsing
 
-### Env overrides
+The dotenv support is intentionally small.
 
-When a config file is loaded, environment variables override selected settings.
+It is meant for predictable deployment defaults, not for supporting every dotenv edge case.
 
-That keeps file-based deployment friendly while still allowing runtime-specific adjustments for container and serverless deployments.
+The parser is limited to the simple `KEY=VALUE` shapes needed by the package configuration model.
 
-### Minimal YAML parser
+### Recipient routing
 
-The YAML support is intentionally small.
+`recipientMap` acts as a routing table for `FormMailSubmission.recipientKey`.
 
-It is meant for predictable deployment config, not for supporting every YAML feature.
+- `to` is the default recipient list
+- a matching `recipientKey` routes to the mapped recipients
+- if the key is missing or unmapped, the package falls back to `to`
 
-The parser is limited to the shapes needed by the package configuration model.
+That keeps the default path simple while still allowing named destinations when a form needs them.
 
 ## Validation and Security
 

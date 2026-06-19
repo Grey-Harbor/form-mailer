@@ -24,7 +24,7 @@
 - The package should stay framework-agnostic and TypeScript-first.
 - Security-conscious defaults matter more than feature breadth.
 - Keep the public API small, predictable, and easy to explain in examples.
-- Default config discovery should look for `configs.yaml` at the deployment root unless an env path override is supplied.
+- Default config loading should read process env directly and optionally layer a dotenv file from `FORM_MAILER_ENV_PATH`, with process env taking precedence.
 - Keep `README.md`, `PLAN.md`, and `ARCHITECTURE.md` aligned with implementation changes that affect behavior or defaults.
 - Keep end-user documentation in `./docs` and organize it with Diátaxis: tutorial, how-to, reference, explanation.
 - Keep the root `README.md` as a landing page, not a long-form guide.

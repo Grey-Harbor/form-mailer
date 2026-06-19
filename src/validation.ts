@@ -168,6 +168,16 @@ export function resolveRecipients(
 ): string[] {
   const candidate = submission.recipientKey ? config.recipientMap?.[submission.recipientKey] : undefined;
   const resolved = normalizeAddressList(candidate ?? config.to);
+  if (resolved.length === 0) {
+    if (submission.recipientKey) {
+      throw createFormMailerError(
+        'config_error',
+        `No recipient mapping configured for key: ${submission.recipientKey}`,
+      );
+    }
+
+    throw createFormMailerError('config_error', 'At least one recipient must be configured.');
+  }
   return resolved.map((entry) => {
     const email = extractEmailAddress(entry);
     if (!isValidEmailAddress(email)) {
@@ -203,9 +213,10 @@ export function resolveConfig(config: FormMailerConfig): ResolvedFormMailerConfi
   }
 
   const from = resolveFromAddress(config.from);
-  const to = resolveRecipients({}, config);
+  const to = normalizeAddressList(config.to);
+  const hasRecipientMap = Boolean(config.recipientMap && Object.keys(config.recipientMap).length > 0);
 
-  if (to.length === 0) {
+  if (to.length === 0 && !hasRecipientMap) {
     throw createFormMailerError('config_error', 'At least one recipient must be configured.');
   }
 
