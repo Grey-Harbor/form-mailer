@@ -2,15 +2,15 @@
   "name": "form-mailer",
   "version": "0.1.0",
   "type": "module",
-  "description": "Lightweight form-to-email delivery for Node.js apps and serverless handlers.",
+  "description": "Lightweight form-to-email delivery for embeddable apps and serverless handlers.",
   "repository": {
     "type": "git",
-    "url": "git@github.com:cuzz22000/form-mailer.git"
+    "url": "git@github.com:Grey-Harbor/form-mailer.git"
   },
   "bugs": {
-    "url": "https://github.com/cuzz22000/form-mailer/issues"
+    "url": "https://github.com/Grey-Harbor/form-mailer/issues"
   },
-  "homepage": "https://github.com/cuzz22000/form-mailer#readme",
+  "homepage": "https://github.com/Grey-Harbor/form-mailer#readme",
   "engines": {
     "node": ">=20"
   },
@@ -32,7 +32,7 @@
     "smtp",
     "email",
     "forms",
-    "nodejs",
+    "serverless",
     "typescript"
   ],
   "exports": {
