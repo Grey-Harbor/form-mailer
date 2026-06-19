@@ -1,16 +1,16 @@
 {
-  "name": "@grey-harbor/form-mailer",
-  "version": "0.1.1",
+  "name": "@greyharbor/form-mailer",
+  "version": "0.1.2",
   "type": "module",
   "description": "Lightweight form-to-email delivery for embeddable apps and serverless handlers.",
   "repository": {
     "type": "git",
-    "url": "git@github.com:Grey-Harbor/form-mailer.git"
+    "url": "git@github.com:greyharbor/form-mailer.git"
   },
   "bugs": {
-    "url": "https://github.com/Grey-Harbor/form-mailer/issues"
+    "url": "https://github.com/greyharbor/form-mailer/issues"
   },
-  "homepage": "https://github.com/Grey-Harbor/form-mailer#readme",
+  "homepage": "https://github.com/greyharbor/form-mailer#readme",
   "engines": {
     "node": ">=20"
   },

@@ -5,13 +5,13 @@ This tutorial walks through the smallest useful `form-mailer` setup.
 ## Install
 
 ```bash
-npm install @grey-harbor/form-mailer
+npm install @greyharbor/form-mailer
 ```
 
 ## Create a mailer
 
 ```ts
-import { createFormMailer } from '@grey-harbor/form-mailer';
+import { createFormMailer } from '@greyharbor/form-mailer';
 
 const mailer = createFormMailer({
   from: 'no-reply@example.com',

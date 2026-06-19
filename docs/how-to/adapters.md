@@ -42,7 +42,7 @@ The message already contains:
 ## Example shape
 
 ```ts
-import type { MailTransport, OutgoingMail, TransportSendResult } from '@grey-harbor/form-mailer';
+import type { MailTransport, OutgoingMail, TransportSendResult } from '@greyharbor/form-mailer';
 
 export function createExampleTransport(apiKey: string): MailTransport {
   return {
@@ -62,7 +62,7 @@ export function createExampleTransport(apiKey: string): MailTransport {
 Pass the adapter into `createFormMailer()` as `transport`:
 
 ```ts
-import { createFormMailer } from '@grey-harbor/form-mailer';
+import { createFormMailer } from '@greyharbor/form-mailer';
 import { createExampleTransport } from './example-transport.js';
 
 const mailer = createFormMailer({
