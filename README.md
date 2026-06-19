@@ -1,12 +1,69 @@
 # form-mailer
 
-Lightweight, embeddable form-to-email delivery for Node.js apps and serverless handlers.
+`form-mailer` is a compact way to turn form submissions into email without dragging a full mail platform into your app.
 
-## Status
+It gives your product a calm, reliable email layer that stays easy to understand, easy to embed, and easy to teach from.
 
-Early scaffolding. Planning lives in [`PLAN.md`](./PLAN.md) and the committed architecture lives in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
+## Why it exists
 
-## Docs
+Most apps do not need a mail system.
+
+They need a small, dependable path from submission to delivery:
+
+- accept the form payload
+- validate and shape the message
+- send through a transport adapter
+- return a typed outcome the app can trust
+
+That is the space `form-mailer` is built for.
+
+## What it helps you do
+
+Use `form-mailer` when you want to:
+
+- add contact, support, lead, or workflow email handling to an existing app
+- keep delivery logic small enough to reason about quickly
+- swap transports without redesigning the application
+- demonstrate simple deployment patterns across multiple environments
+- build a learning-friendly example that still feels production-minded
+
+## What you gain
+
+Using `form-mailer` gives you a few practical advantages:
+
+- a narrow API instead of a sprawling mail subsystem
+- typed success and failure results instead of vague side effects
+- security-conscious defaults for validation and message handling
+- separate adapters for different runtimes and delivery paths
+- documentation that can double as teaching material
+
+## Product goals
+
+The project is guided by a simple set of goals:
+
+- stay framework-agnostic
+- stay TypeScript-first
+- keep the dependency footprint small
+- keep the default path safe and predictable
+- support multiple runtime environments through separate adapters
+- remain easy to explain in tutorials, demos, and deployment guides
+
+## Best fit
+
+This package is a good fit when you want:
+
+- a compact email delivery layer for an existing Node.js application
+- a reusable foundation for demo deployments in places like Cloudflare or AWS Lambda
+- a codebase that is simple enough to teach from, not just use
+
+It is not intended to become:
+
+- a hosted mail service
+- a newsletter platform
+- a full mail server
+- an SMTP relay product
+
+## Start here
 
 - [Documentation home](./docs/README.md)
 - [Tutorial](./docs/tutorial/getting-started.md)
@@ -14,10 +71,8 @@ Early scaffolding. Planning lives in [`PLAN.md`](./PLAN.md) and the committed ar
 - [Reference](./docs/reference/api.md)
 - [Explanation](./docs/explanation/overview.md)
 
-## Snapshot
+## Project notes
 
-- TypeScript-first
-- ESM-first
-- minimal dependencies
-- security-conscious defaults
-- framework-agnostic API surface
+- Planning lives in [`PLAN.md`](./PLAN.md)
+- The committed design lives in [`ARCHITECTURE.md`](./ARCHITECTURE.md)
+- End-user documentation lives in [`./docs`](./docs)
