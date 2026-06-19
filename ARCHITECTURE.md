@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`form-mailer` is a lightweight, embeddable Node.js package for turning validated form submissions into email messages.
+`form-mailer` is a lightweight, embeddable package for turning validated form submissions into email messages.
 
 It is designed to stay:
 
@@ -11,6 +11,8 @@ It is designed to stay:
 - security-conscious by default
 - dependency-light
 - easy to embed in API routes, backend services, and serverless handlers
+
+The core mailer flow is runtime-neutral, while the Node-specific SMTP and environment-loading helpers remain available for the default package path.
 
 It is not intended to become:
 
@@ -52,12 +54,15 @@ flowchart LR
 The implementation is organized into small modules:
 
 - `src/index.ts` exposes the public API
+- `src/mailer.ts` hosts the runtime-neutral mailer core
 - `src/config.ts` loads environment-based configuration and selects transport
 - `src/validation.ts` validates submissions and resolves message data
 - `src/mail.ts` assembles the outbound message
 - `src/smtp.ts` sends the message over SMTP
 - `src/errors.ts` creates the package error type
 - `src/types.ts` defines the public TypeScript contracts
+- `examples/shared/*` contains the demo transport and mailer helpers
+- `examples/cloudflare-worker/*` and `examples/aws-lambda/*` show the runtime-specific entrypoints
 
 ## Public Surface
 
@@ -122,6 +127,16 @@ The transport interface is intentionally small:
 - `send(message): Promise<TransportSendResult>`
 
 This keeps the package open to custom transports without turning the core API into a transport framework.
+
+### 5. Reuse the core in demos
+
+The same core mailer flow can run inside demo runtimes that supply their own transport adapter.
+
+That pattern keeps the project useful in environments such as:
+
+- Cloudflare Workers
+- AWS Lambda
+- other serverless handlers with a compatible transport adapter
 
 ## Configuration Architecture
 
@@ -234,7 +249,8 @@ The documentation hierarchy should make it easy to find:
 
 ## Architectural Invariants
 
-- Node.js is the primary runtime target.
+- Node.js is the default runtime target for SMTP and config helpers.
+- The core mailer flow stays runtime-neutral so demo runtimes can reuse it.
 - The package handles email delivery only.
 - The package does not embed a queueing layer or hosted mail service behavior.
 - Public APIs stay small and explicit.

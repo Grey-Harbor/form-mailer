@@ -68,6 +68,7 @@ It is not intended to become:
 - [Documentation home](./docs/README.md)
 - [Tutorial](./docs/tutorial/getting-started.md)
 - [How-to](./docs/how-to/configuration.md)
+- [Demo runtimes](./docs/how-to/demos.md)
 - [Reference](./docs/reference/api.md)
 - [Explanation](./docs/explanation/overview.md)
 

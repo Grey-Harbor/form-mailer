@@ -9,6 +9,7 @@ This set of pages is organized with Diátaxis, which means each page has a clear
 - [Tutorial](./tutorial/getting-started.md) if you want to get a first working setup quickly
 - [How-to: Configuration](./how-to/configuration.md) if you need to wire the package into a real app
 - [How-to: Adapters](./how-to/adapters.md) if you want to implement your own transport
+- [How-to: Demo Runtimes](./how-to/demos.md) if you want to see Cloudflare and Lambda examples
 - [How-to: Releasing](./how-to/releasing.md) if you are preparing a publish flow
 - [Reference: API](./reference/api.md) if you need exact API details
 - [Reference: Adapters](./reference/adapters.md) if you need the transport contract

@@ -1,6 +1,18 @@
-import { randomUUID } from 'node:crypto';
 import type { FormMailSubmission, OutgoingMail, ResolvedFormMailerConfig } from './types.js';
 import { formatAddress, resolveRecipients, resolveReplyTo, resolveSubject, sanitizeHeaderValue } from './validation.js';
+
+function createRandomIdentifier(): string {
+  const crypto = globalThis.crypto;
+  if (crypto && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+
+  return [
+    Date.now().toString(16),
+    Math.random().toString(16).slice(2),
+    Math.random().toString(16).slice(2),
+  ].join('');
+}
 
 function escapeHtml(value: string): string {
   return value
@@ -88,7 +100,7 @@ export function buildMailMessage(
 }
 
 export function renderMessageHeaders(message: OutgoingMail): string {
-  const messageId = `<${randomUUID()}@form-mailer.local>`;
+  const messageId = `<${createRandomIdentifier()}@form-mailer.local>`;
   const headers = [
     `From: ${message.from}`,
     `To: ${message.to.join(', ')}`,
@@ -118,7 +130,7 @@ export function buildRawMessage(message: OutgoingMail): string {
     ].join('\r\n');
   }
 
-  const boundary = `form-mailer-${randomUUID()}`;
+  const boundary = `form-mailer-${createRandomIdentifier()}`;
   return [
     headers,
     `Content-Type: multipart/alternative; boundary="${boundary}"`,

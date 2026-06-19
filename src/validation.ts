@@ -12,6 +12,7 @@ import type {
 
 const DEFAULT_MAX_PAYLOAD_BYTES = 64 * 1024;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const textEncoder = new TextEncoder();
 
 export function isValidEmailAddress(value: string): boolean {
   return EMAIL_PATTERN.test(value.trim());
@@ -52,7 +53,7 @@ export function normalizeAddressList(value?: string | string[]): string[] {
 }
 
 function byteLength(value: string): number {
-  return Buffer.byteLength(value, 'utf8');
+  return textEncoder.encode(value).byteLength;
 }
 
 function serializeForLimitCheck(submission: FormMailSubmission): string {
