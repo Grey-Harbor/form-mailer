@@ -26,3 +26,6 @@ jobs:
 
       - name: Test
         run: npm test
+
+      - name: Pack check
+        run: npm run pack:check
