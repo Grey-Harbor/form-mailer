@@ -1,5 +1,18 @@
 # Reference: API
 
+## Top-level exports
+
+The package root exports the supported entrypoints:
+
+- `createFormMailer`
+- `createSmtpTransport`
+- `loadConfigFromEnv`
+- `loadConfigFromFile`
+- `createFormMailerError`
+- `isFormMailerError`
+
+It also exports the public TypeScript types used by those entrypoints.
+
 ## `createFormMailer(config)`
 
 Creates a mailer instance with:
@@ -49,4 +62,3 @@ Creates a mailer instance with:
 - `validation_error`
 - `transport_error`
 - `smtp_error`
-

@@ -1,15 +1,32 @@
-export * from './config.js';
-export * from './errors.js';
-export * from './mail.js';
-export * from './smtp.js';
-export * from './types.js';
-export * from './validation.js';
-
 import { createTransportFromConfig } from './config.js';
 import { buildMailMessage } from './mail.js';
 import { createFormMailerError, isFormMailerError } from './errors.js';
 import { validateSubmission, validationFailureError, resolveConfig } from './validation.js';
 import type { FormMailer, FormMailerConfig, FormMailSubmission } from './types.js';
+
+export { loadConfigFromEnv, loadConfigFromFile } from './config.js';
+export { createFormMailerError, isFormMailerError } from './errors.js';
+export { createSmtpTransport } from './smtp.js';
+export type {
+  FormMailer,
+  FormMailerConfig,
+  FormMailerError,
+  FormMailerErrorCode,
+  FormMailSubmission,
+  MailAddress,
+  MailTransport,
+  OutgoingMail,
+  ResolvedFormMailerConfig,
+  SendMailFailure,
+  SendMailOutcome,
+  SendMailResult,
+  SmtpConnectionConfig,
+  SubmissionFields,
+  SubmissionValue,
+  TransportSendResult,
+  ValidationIssue,
+  ValidationResult,
+} from './types.js';
 
 export function createFormMailer(config: FormMailerConfig): FormMailer {
   const resolved = resolveConfig(config);
