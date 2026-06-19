@@ -8,6 +8,7 @@
 - Do not use destructive git commands unless explicitly requested.
 - Preserve user-authored changes when working in a dirty tree.
 - Treat `PLAN.md` as a living document while the project is still being defined.
+- Once the initial implementation is stable, replace `PLAN.md` with a committed `ARCHITECTURE.md`.
 
 ## Commit Messages
 
