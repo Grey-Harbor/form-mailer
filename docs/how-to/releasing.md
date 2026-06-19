@@ -1,6 +1,6 @@
 # How-To: Releasing
 
-This guide captures the release flow for the package while it is still evolving.
+This guide captures the tag-driven release flow for the package.
 
 ## Before release
 
@@ -8,6 +8,7 @@ This guide captures the release flow for the package while it is still evolving.
 - run `npm run pack:check`
 - confirm `README.md` still reads like a landing page
 - confirm the root export surface is still intentional
+- confirm the git tag will follow the `v*` semver pattern used by CI
 
 ## Version bump
 
@@ -19,14 +20,26 @@ Use Conventional Commits to decide the next semver bump:
 
 ## Publish flow
 
-1. Update the version.
+1. Update the version in `package.json`.
 2. Regenerate the lockfile only if dependencies changed.
-3. Tag the release in git.
-4. Push the branch and the tag.
-5. Publish the package to npm.
+3. Commit the release version bump.
+4. Create and push a semver tag like `v0.1.1`.
+5. Let GitHub Actions run the existing checks and publish with `npm publish --provenance`.
+
+The CI publish job should only run for tag pushes that match `v*`.
+
+## CI checks
+
+For both branch and tag runs, CI should:
+
+- install dependencies with `npm ci`
+- run `npm run check`
+- run `npm test`
+- run `npm run pack:check`
+
+On matching tags, the workflow should publish the package to npm after those checks succeed.
 
 ## Post-release
 
 - confirm the published tarball is still limited to runtime output plus the README
 - capture any follow-up work in `PLAN.md` until the architecture handoff happens
-
