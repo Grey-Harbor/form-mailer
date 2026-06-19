@@ -17,6 +17,8 @@ Diátaxis helps keep each documentation page focused:
 - reference pages describe the API precisely
 - explanation pages capture reasoning and tradeoffs
 
+For adapter-specific guidance, see [How-to: Adapters](../how-to/adapters.md) and [Explanation: Adapters](./adapters.md).
+
 ## Design priorities
 
 - simplicity over abstraction
@@ -24,4 +26,3 @@ Diátaxis helps keep each documentation page focused:
 - Node.js compatibility first
 - minimal dependencies
 - plain error and result shapes
-
