@@ -63,6 +63,8 @@ If the file contains `FORM_MAILER_SMTP_PASSWORD`, the loader logs a warning beca
 - otherwise the package falls back to `to`
 - `to` is still the default recipient list for submissions that do not set a route key
 
+Transport adapter details live in [Reference: Adapters](./adapters.md).
+
 ## Result shape
 
 `send()` returns:
