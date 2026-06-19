@@ -9,6 +9,7 @@
 - Preserve user-authored changes when working in a dirty tree.
 - Treat `PLAN.md` as a living document while the project is still being defined.
 - Once the initial implementation is stable, replace `PLAN.md` with a committed `ARCHITECTURE.md`.
+- Keep `ARCHITECTURE.md` aligned with the implementation once it becomes the committed design reference.
 
 ## Commit Messages
 
@@ -24,7 +25,7 @@
 - Security-conscious defaults matter more than feature breadth.
 - Keep the public API small, predictable, and easy to explain in examples.
 - Default config discovery should look for `configs.yaml` at the deployment root unless an env path override is supplied.
-- Keep `README.md` and `PLAN.md` aligned with implementation changes that affect behavior or defaults.
+- Keep `README.md`, `PLAN.md`, and `ARCHITECTURE.md` aligned with implementation changes that affect behavior or defaults.
 - Keep end-user documentation in `./docs` and organize it with Diátaxis: tutorial, how-to, reference, explanation.
 - Keep the root `README.md` as a landing page, not a long-form guide.
 

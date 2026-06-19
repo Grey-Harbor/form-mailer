@@ -4,7 +4,7 @@ Lightweight, embeddable form-to-email delivery for Node.js apps and serverless h
 
 ## Status
 
-Early scaffolding. Planning lives in [`PLAN.md`](./PLAN.md).
+Early scaffolding. Planning lives in [`PLAN.md`](./PLAN.md) and the committed architecture lives in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 
 ## Docs
 
