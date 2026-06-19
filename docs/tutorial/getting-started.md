@@ -5,13 +5,13 @@ This tutorial walks through the smallest useful `form-mailer` setup.
 ## Install
 
 ```bash
-npm install form-mailer
+npm install @grey-harbor/form-mailer
 ```
 
 ## Create a mailer
 
 ```ts
-import { createFormMailer } from 'form-mailer';
+import { createFormMailer } from '@grey-harbor/form-mailer';
 
 const mailer = createFormMailer({
   from: 'no-reply@example.com',
@@ -47,4 +47,3 @@ if (!result.ok) {
 - invalid payloads fail before transport work begins
 - valid payloads are converted into a plain text and HTML mail body
 - transport errors are returned as typed failures
-

@@ -1,4 +1,4 @@
-# form-mailer 0.1.0
+# @grey-harbor/form-mailer 0.1.0
 
 Release tag: `v0.1.0`
 
@@ -6,7 +6,7 @@ This first package release establishes the core mailer API, the default SMTP tra
 
 ## GitHub Release Blurb
 
-`form-mailer` 0.1.0 is the first public release of the package.
+`@grey-harbor/form-mailer` 0.1.0 is the first public release of the package.
 
 It includes env-first configuration, typed validation and delivery results, `recipientKey` routing, and the default SMTP transport. The package is ready for embeddable app and serverless use, with docs and examples laid out for future runtime-specific adapters.
 
@@ -23,7 +23,7 @@ It includes env-first configuration, typed validation and delivery results, `rec
 
 ## Packaging
 
-- published package name: `form-mailer`
+- published package name: `@grey-harbor/form-mailer`
 - npm version: `0.1.0`
 - public package surface is limited to the built runtime output plus `README.md`
 
