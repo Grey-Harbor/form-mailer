@@ -68,11 +68,10 @@ It is not intended to become:
 ## Start here
 
 - [Documentation home](./docs/README.md)
-- [Tutorial](./docs/tutorial/getting-started.md)
-- [How-to](./docs/how-to/configuration.md)
-- [Demo runtimes](./docs/how-to/demos.md)
-- [Reference](./docs/reference/api.md)
-- [Explanation](./docs/explanation/overview.md)
+- [Tutorials](./docs/tutorial/README.md)
+- [How-to Guides](./docs/how-to/README.md)
+- [Reference](./docs/reference/README.md)
+- [Explanation](./docs/explanation/README.md)
 
 ## Project notes
 

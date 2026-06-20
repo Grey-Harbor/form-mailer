@@ -2,6 +2,8 @@
 
 This guide points to the demo implementations that show `form-mailer` running in different environments.
 
+The example apps use their own `MAILER_*` environment variables so they stay separate from the package's `FORM_MAILER_*` configuration model.
+
 ## Why demos exist
 
 The demos are meant to be practical reference points:
@@ -22,6 +24,8 @@ It demonstrates:
 
 See [`examples/cloudflare-worker/README.md`](../../examples/cloudflare-worker/README.md) for the environment variables and request shape.
 
+Those names are example-specific and feed the shared demo factory rather than the package's own environment loader.
+
 ## AWS Lambda demo
 
 The AWS Lambda demo lives in [`examples/aws-lambda/src/handler.ts`](../../examples/aws-lambda/src/handler.ts).
@@ -33,6 +37,8 @@ It demonstrates:
 - the same webhook transport adapter pattern
 
 See [`examples/aws-lambda/README.md`](../../examples/aws-lambda/README.md) for the environment variables and request shape.
+
+Those names are example-specific and feed the shared demo factory rather than the package's own environment loader.
 
 ## Shared pieces
 

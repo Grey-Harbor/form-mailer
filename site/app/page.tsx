@@ -22,22 +22,22 @@ const paths = [
   {
     title: 'Tutorial',
     description: 'Get to a first working setup.',
-    href: '/docs/tutorial/getting-started',
+    href: '/docs/tutorial',
   },
   {
     title: 'How-to',
     description: 'Apply it in a real app.',
-    href: '/docs/how-to/configuration',
+    href: '/docs/how-to',
   },
   {
     title: 'Reference',
     description: 'Check the API, options, and adapters.',
-    href: '/docs/reference/api',
+    href: '/docs/reference',
   },
   {
     title: 'Explanation',
     description: 'See the design choices behind it.',
-    href: '/docs/explanation/overview',
+    href: '/docs/explanation',
   },
 ] as const;
 
@@ -51,8 +51,8 @@ export default function HomePage() {
           <p className="lede">A compact, TypeScript-first package for turning form submissions into email.</p>
 
           <div className="actions">
-            <Link className="button primary" href="/docs/tutorial/getting-started">
-              Read the tutorial
+            <Link className="button primary" href="/docs/tutorial">
+              Read the tutorials
             </Link>
             <Link className="button secondary" href="/docs">
               Browse the docs
