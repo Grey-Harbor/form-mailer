@@ -1,0 +1,22 @@
+<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">form-mailer monogram</title>
+  <desc id="desc">A rounded square logo with distinct F and M initials.</desc>
+  <defs>
+    <linearGradient id="panel" x1="48" y1="40" x2="194" y2="200" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B1C26"/>
+      <stop offset="1" stop-color="#07131B"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="52" y1="48" x2="188" y2="192" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#88B6D0" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#D5A86C" stop-opacity="0.7"/>
+    </linearGradient>
+    <linearGradient id="f" x1="72" y1="78" x2="118" y2="162" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F2D2A2"/>
+      <stop offset="1" stop-color="#D5A86C"/>
+    </linearGradient>
+  </defs>
+  <rect x="28" y="28" width="184" height="184" rx="52" fill="url(#panel)"/>
+  <rect x="30" y="30" width="180" height="180" rx="50" stroke="url(#edge)" stroke-width="4"/>
+  <path d="M74 164V76H124V88H89V112H117V124H89V164H74Z" fill="url(#f)"/>
+  <path d="M124 164V76H139.5L159.2 123.5L178.9 76H194V164H180.8V100.9L162.9 145H155.4L137.2 100.9V164H124Z" fill="#EDF4F8"/>
+</svg>
