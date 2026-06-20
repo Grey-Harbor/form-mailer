@@ -1,5 +1,8 @@
 import Link from 'next/link';
 
+const packageBadgeHref = 'https://badge.fury.io/js/@greyharbor%2Fform-mailer';
+const packageBadgeSrc = 'https://badge.fury.io/js/@greyharbor%2Fform-mailer.svg';
+
 const cards = [
   {
     title: 'Validation first',
@@ -131,6 +134,15 @@ export default function HomePage() {
       </section>
 
       <footer className="site-footer">
+        <a
+          className="package-badge package-badge-footer"
+          href={packageBadgeHref}
+          target="_blank"
+          rel="noreferrer"
+          aria-label="npm package version"
+        >
+          <img src={packageBadgeSrc} alt="" />
+        </a>
         <div className="footer-links" aria-label="Related links">
           <a href="https://github.com/Grey-Harbor/form-mailer" target="_blank" rel="noreferrer">
             GitHub repository

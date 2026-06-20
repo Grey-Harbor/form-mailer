@@ -280,6 +280,35 @@ svg {
   gap: 0.9rem;
 }
 
+.package-badge {
+  display: inline-flex;
+  align-self: flex-start;
+  border-radius: 999px;
+  overflow: hidden;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.package-badge img {
+  display: block;
+  height: auto;
+}
+
+.package-badge:hover,
+.package-badge:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+}
+
+.package-badge-hero img {
+  width: 188px;
+}
+
+.package-badge-footer img {
+  width: 188px;
+}
+
 .button {
   display: inline-flex;
   align-items: center;
@@ -481,7 +510,7 @@ svg {
 
 .site-footer {
   display: grid;
-  gap: 0.9rem;
+  gap: 1rem;
   padding: 1.4rem 0 0;
   justify-items: center;
   text-align: center;
