@@ -58,16 +58,6 @@ export default function HomePage() {
               Browse the docs
             </Link>
           </div>
-
-          <a
-            className="package-badge package-badge-hero"
-            href={packageBadgeHref}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="npm package version"
-          >
-            <img src={packageBadgeSrc} alt="" />
-          </a>
         </div>
 
         <aside className="hero-panel" aria-label="What form-mailer gives you">
