@@ -129,6 +129,20 @@ export default function HomePage() {
           </article>
         </div>
       </section>
+
+      <footer className="site-footer">
+        <div className="footer-links" aria-label="Related links">
+          <a href="https://github.com/Grey-Harbor/form-mailer" target="_blank" rel="noreferrer">
+            GitHub repository
+          </a>
+          <a href="https://www.greyharborsoftware.com" target="_blank" rel="noreferrer">
+            Grey Harbor Software
+          </a>
+        </div>
+        <p>
+          &copy; {new Date().getFullYear()} Grey Harbor Software. All rights reserved.
+        </p>
+      </footer>
     </main>
   );
 }
