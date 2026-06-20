@@ -5,6 +5,8 @@
 - Use Conventional Commits for every commit.
 - Keep each commit focused on one logical change.
 - Prefer small, reviewable edits over broad rewrites.
+- Do all work on feature or fix branches; do not work directly on `main`.
+- Treat `main` as protected and never force-push to it.
 - Do not use destructive git commands unless explicitly requested.
 - Preserve user-authored changes when working in a dirty tree.
 - Treat `PLAN.md` as a living document while the project is still being defined.
