@@ -1,6 +1,6 @@
 # How-To Guides
 
-This path is for task-oriented guidance. Use these pages when you already know what you want to do and need a reliable way to do it.
+This path is for task-oriented guidance. Use these pages when you already know the outcome you want and need a reliable way to get there.
 
 ## Pages in this path
 

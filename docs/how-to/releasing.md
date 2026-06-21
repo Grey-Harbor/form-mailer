@@ -1,6 +1,6 @@
 # How-To: Releasing
 
-This guide captures the tag-driven release flow for the package.
+This guide walks through the tag-driven release flow for the package.
 
 ## Before release
 

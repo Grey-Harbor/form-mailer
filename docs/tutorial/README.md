@@ -1,7 +1,7 @@
 # Tutorials
 
-This path is for getting to a first working setup as quickly as possible.
-Tutorials should show the smallest complete path from install to success, with minimal detours.
+This path helps you get to a first working setup quickly, with the fewest moving parts we can manage.
+Tutorials should show the smallest complete path from install to success.
 
 ## Pages in this path
 
