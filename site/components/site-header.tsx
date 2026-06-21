@@ -2,10 +2,10 @@ import Link from 'next/link';
 
 const navItems = [
   { href: '/docs', label: 'Docs' },
-  { href: '/docs/tutorial/getting-started', label: 'Tutorial' },
-  { href: '/docs/how-to/configuration', label: 'How-to' },
-  { href: '/docs/reference/api', label: 'API' },
-  { href: '/docs/explanation/overview', label: 'Explanation' },
+  { href: '/docs/tutorial', label: 'Tutorial' },
+  { href: '/docs/how-to', label: 'How-to' },
+  { href: '/docs/reference', label: 'API' },
+  { href: '/docs/explanation', label: 'Explanation' },
 ] as const;
 
 export function SiteHeader() {

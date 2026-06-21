@@ -1,26 +1,21 @@
 # Documentation
 
-Welcome to the `form-mailer` docs.
+This docs set follows Diátaxis: each path answers a different kind of question.
 
-This set of pages is organized with Diátaxis, which means each page has a clear job and a clear audience. Start with the path that matches what you are trying to do.
+Use the path index that matches your goal:
 
-## Choose your path
+- [Tutorials](./tutorial/README.md) for the first successful path
+- [How-To Guides](./how-to/README.md) for task-focused instructions
+- [Reference](./reference/README.md) for exact API and contract details
+- [Explanation](./explanation/README.md) for the design reasoning behind the package
 
-- [Tutorial](./tutorial/getting-started.md) if you want to get a first working setup quickly
-- [How-to: Configuration](./how-to/configuration.md) if you need to wire the package into a real app
-- [How-to: Adapters](./how-to/adapters.md) if you want to implement your own transport
-- [How-to: Demo Runtimes](./how-to/demos.md) if you want to see Cloudflare and Lambda examples
-- [How-to: Releasing](./how-to/releasing.md) if you are preparing a publish flow
-- [Reference: API](./reference/api.md) if you need exact API details
-- [Reference: Adapters](./reference/adapters.md) if you need the transport contract
-- [Explanation](./explanation/overview.md) if you want the design reasoning
-- [Explanation: Adapters](./explanation/adapters.md) if you want the adapter architecture rationale
-
-## How to think about it
+How Diátaxis maps to this project:
 
 - tutorials show the first successful path
 - how-to guides help you accomplish a task
 - reference pages define the contract precisely
 - explanation pages capture the tradeoffs and intent behind the design
 
-If you are just getting started, the tutorial is the best place to begin.
+The path READMEs act as indexes for the pages inside each directory.
+
+If you are just getting started, begin with [Tutorials](./tutorial/README.md).
