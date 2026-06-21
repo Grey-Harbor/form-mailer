@@ -30,6 +30,8 @@
 - Keep `README.md`, `PLAN.md`, and `ARCHITECTURE.md` aligned with implementation changes that affect behavior or defaults.
 - Keep end-user documentation in `./docs` and organize it with Diátaxis: tutorial, how-to, reference, explanation.
 - Keep the root `README.md` as a landing page, not a long-form guide.
+- When writing PR bodies, release notes, or other Markdown handoff files, always use real line breaks instead of literal `\n` escape sequences.
+- After editing a Markdown handoff file, re-open it and verify the formatting before sharing or publishing it.
 
 ## Implementation Expectations
 
