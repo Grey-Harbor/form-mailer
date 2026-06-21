@@ -73,6 +73,36 @@ It is not intended to become:
 - [Reference](./docs/reference/README.md)
 - [Explanation](./docs/explanation/README.md)
 
+## Site preview
+
+Use the root scripts to build and preview the GitHub Pages site locally:
+
+```bash
+npm run site:build
+npm run preview
+```
+
+From `./site`, the equivalent commands are:
+
+```bash
+npm run build
+npm run preview
+```
+
+The preview serves the static export, so it is the right local QA path for Pages behavior.
+
+## Contribution flow
+
+Do work on a branch, then commit, push, and continue the pull request from that branch:
+
+```bash
+git switch -c codex/my-change
+git add -A
+git commit -m "feat(scope): describe the change"
+git push -u origin codex/my-change
+gh pr create --base main --head codex/my-change
+```
+
 ## Project notes
 
 - Planning lives in [`PLAN.md`](./PLAN.md)
