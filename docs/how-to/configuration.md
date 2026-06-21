@@ -1,6 +1,6 @@
 # How-To: Configuration
 
-This guide shows the configuration options that matter in practice.
+This guide covers the configuration knobs you'll actually reach for in day-to-day use.
 If you want the exact type shapes and return values, see [Reference: API](../reference/api.md).
 
 ## Configuration sources
@@ -24,13 +24,13 @@ If the dotenv file contains `FORM_MAILER_SMTP_PASSWORD`, `form-mailer` logs a wa
 
 ## Environment variables
 
-Minimum setup usually needs:
+Most setups need:
 
 - `FORM_MAILER_FROM`: sender mailbox used on the outgoing message
 - `FORM_MAILER_TO` or `FORM_MAILER_RECIPIENT_MAP`: where messages should be delivered
 - `FORM_MAILER_SMTP_HOST`: SMTP server hostname
 
-Everything else is optional:
+The rest is optional:
 
 - `FORM_MAILER_TO` (optional): default recipient list used when no `recipientKey` route is matched
 - `FORM_MAILER_RECIPIENT_MAP` (optional): JSON object that maps `recipientKey` values to recipient lists
@@ -54,7 +54,7 @@ Legacy sender aliases are still accepted:
 - `FORM_MAILER_SENDER_EMAIL` can supply the sender email when `FORM_MAILER_FROM` is absent
 - `FORM_MAILER_SENDER_NAME` can supply the sender display name
 
-If you are using a local SMTP relay or a development server that does not require auth, you can omit the username and password values.
+If you're using a local SMTP relay or a development server that does not require auth, you can omit the username and password values.
 
 ## Recipient mapping
 

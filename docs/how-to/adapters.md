@@ -1,6 +1,6 @@
 # How-To: Implement an Adapter
 
-This guide shows how to implement a transport adapter for `form-mailer`.
+This guide walks through the shape of a transport adapter for `form-mailer`.
 
 ## What an adapter does
 
@@ -76,7 +76,7 @@ const mailer = createFormMailer({
 
 - keep the adapter small and provider-focused
 - do not re-implement validation in the adapter
-- sanitize or trust only the message shape already produced by `form-mailer`
+- trust only the message shape already produced by `form-mailer`
 - prefer typed errors for transport failures when possible
 - keep provider-specific config out of the core package
 

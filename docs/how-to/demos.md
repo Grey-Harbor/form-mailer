@@ -1,6 +1,6 @@
 # How-To: Demo Runtimes
 
-This guide points to the demo implementations that show `form-mailer` running in different environments.
+This guide points you to the demo implementations that show `form-mailer` running in different environments.
 
 The example apps use their own `MAILER_*` environment variables so they stay separate from the package's `FORM_MAILER_*` configuration model.
 

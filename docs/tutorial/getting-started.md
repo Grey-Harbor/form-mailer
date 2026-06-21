@@ -1,6 +1,6 @@
 # Tutorial: Getting Started
 
-This tutorial walks through the smallest useful `form-mailer` setup.
+This tutorial gets you to a first useful `form-mailer` setup with the fewest moving parts.
 
 ## Install
 
@@ -44,6 +44,6 @@ if (!result.ok) {
 
 ## What to expect
 
-- invalid payloads fail before transport work begins
-- valid payloads are converted into a plain text and HTML mail body
-- transport errors are returned as typed failures
+- invalid payloads are rejected before transport work begins
+- valid payloads become plain text and HTML mail bodies
+- transport failures come back as typed errors you can handle in your app

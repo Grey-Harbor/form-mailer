@@ -1,21 +1,21 @@
 # Documentation
 
-This docs set follows Diátaxis: each path answers a different kind of question.
+This docs set follows Diátaxis, so each path answers a different kind of question without getting in the others' way.
 
-Use the path index that matches your goal:
+Pick the path index that matches what you're trying to do:
 
-- [Tutorials](./tutorial/README.md) for the first successful path
-- [How-To Guides](./how-to/README.md) for task-focused instructions
-- [Reference](./reference/README.md) for exact API and contract details
-- [Explanation](./explanation/README.md) for the design reasoning behind the package
+- [Tutorials](./tutorial/README.md) when you want a first working setup
+- [How-To Guides](./how-to/README.md) when you already know the task and want a clear way through it
+- [Reference](./reference/README.md) when you need exact API and contract details
+- [Explanation](./explanation/README.md) when you want the design reasoning behind the package
 
 How Diátaxis maps to this project:
 
-- tutorials show the first successful path
-- how-to guides help you accomplish a task
+- tutorials help you get something working
+- how-to guides help you get a specific job done
 - reference pages define the contract precisely
 - explanation pages capture the tradeoffs and intent behind the design
 
 The path READMEs act as indexes for the pages inside each directory.
 
-If you are just getting started, begin with [Tutorials](./tutorial/README.md).
+If you're just getting started, begin with [Tutorials](./tutorial/README.md).

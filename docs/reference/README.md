@@ -1,6 +1,6 @@
 # Reference
 
-This path is for exact technical detail. Use these pages when you need to confirm the package contract rather than learn a workflow.
+This path is for exact technical detail. Use these pages when you want to confirm the package contract without digging through a tutorial or how-to guide.
 
 ## Pages in this path
 

@@ -1,6 +1,6 @@
 # Explanation
 
-This path is for design reasoning and architectural context. Use these pages when you want to understand why the package is shaped the way it is.
+This path is for design reasoning and architectural context. Use these pages when you want the thinking behind the shape of the package and the tradeoffs that shaped it.
 
 ## Pages in this path
 
