@@ -4,8 +4,9 @@ import { notFound } from 'next/navigation';
 import { PageArticle, PageRoot } from 'fumadocs-ui/layouts/docs/page';
 import { DocsBody, DocsDescription, DocsTitle } from 'fumadocs-ui/page';
 
-import { getDocDescription, getDocPage, getDocParams } from '@/lib/docs';
+import { getDocDescription, getDocPage, getDocParams, routeFromSlug } from '@/lib/docs';
 import { titleForDoc } from '@/lib/format';
+import { buildPageMetadata } from '@/lib/seo';
 
 interface DocsPageProps {
   params: Promise<{
@@ -27,10 +28,11 @@ export async function generateMetadata({ params }: DocsPageProps): Promise<Metad
 
   const title = page.title ?? titleForDoc(page.filePath.replace(/\.md$/, ''), 'Documentation');
 
-  return {
+  return buildPageMetadata({
     title,
     description: page.description,
-  };
+    canonicalPath: routeFromSlug(slug ?? []),
+  });
 }
 
 export default async function DocsPageRoute({ params }: DocsPageProps) {

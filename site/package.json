@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "check": "tsc -p tsconfig.json --noEmit"
+    "check": "tsc -p tsconfig.json --noEmit",
+    "preview": "node scripts/preview.mjs"
   },
   "dependencies": {
     "fumadocs-core": "^15.0.0",
