@@ -61,7 +61,7 @@ function slugFromFile(filePath: string): string[] {
   return normalized.split('/').map((segment) => (segment === 'README' ? '' : segment)).filter(Boolean);
 }
 
-function routeFromSlug(slug: string[]): string {
+export function routeFromSlug(slug: string[]): string {
   return slug.length === 0 ? '/docs' : `/docs/${slug.join('/')}`;
 }
 

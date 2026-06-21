@@ -26,6 +26,8 @@
     "check": "tsc -p tsconfig.json --noEmit",
     "ci": "npm run check && npm test",
     "pack:check": "npm pack --dry-run",
+    "site:build": "npm --prefix site run build",
+    "preview": "npm --prefix site run preview",
     "test": "npm run build && node --test dist/test/*.test.js"
   },
   "keywords": [
