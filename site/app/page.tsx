@@ -30,14 +30,14 @@ const paths = [
     href: '/docs/how-to',
   },
   {
-    title: 'Reference',
-    description: 'Check the API, options, and adapters.',
-    href: '/docs/reference',
-  },
-  {
     title: 'Explanation',
     description: 'See the design choices behind it.',
     href: '/docs/explanation',
+  },
+  {
+    title: 'Reference',
+    description: 'Check the API, options, and adapters.',
+    href: '/docs/reference',
   },
 ] as const;
 
