@@ -152,6 +152,7 @@ function createBody(markdown: string, filePath: string): DocPage {
 
     if (!description && title && node.type === 'paragraph') {
       description = toString(node).trim();
+      return false;
     }
 
     return true;
