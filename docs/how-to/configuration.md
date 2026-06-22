@@ -22,6 +22,8 @@ Values from the actual process environment override values loaded from the file.
 
 If the dotenv file contains `FORM_MAILER_SMTP_PASSWORD`, `form-mailer` logs a warning because secrets are safer in live environment variables than in shared files.
 
+The environment loader behavior is defined precisely in [Reference: API](../reference/api.md).
+
 ## Environment variables
 
 Most setups need:
@@ -55,6 +57,8 @@ Legacy sender aliases are still accepted:
 - `FORM_MAILER_SENDER_NAME` can supply the sender display name
 
 If you're using a local SMTP relay or a development server that does not require auth, you can omit the username and password values.
+
+For a minimal SMTP-backed example, see [Tutorial: Getting Started](../tutorial/getting-started.md).
 
 ## Recipient mapping
 

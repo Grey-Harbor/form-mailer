@@ -2,6 +2,8 @@
 
 This tutorial gets you to a first useful `form-mailer` setup with the fewest moving parts.
 
+For the full config surface after you have this working, continue with [How-To: Configuration](../how-to/configuration.md).
+
 ## Install
 
 ```bash
@@ -44,6 +46,6 @@ if (!result.ok) {
 
 ## What to expect
 
-- invalid payloads are rejected before transport work begins
+- invalid payloads are rejected before transport work begins, following the checks in [Explanation: Validation](../explanation/validation.md)
 - valid payloads become plain text and HTML mail bodies
-- transport failures come back as typed errors you can handle in your app
+- transport failures come back as typed errors you can handle in your app, using the result shape described in [Reference: API](../reference/api.md)

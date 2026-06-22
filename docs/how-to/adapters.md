@@ -2,13 +2,15 @@
 
 This guide walks through the shape of a transport adapter for `form-mailer`.
 
+For the exact adapter contract, see [Reference: Adapters](../reference/adapters.md).
+
 ## What an adapter does
 
 An adapter is a small transport implementation that knows how to deliver an already-built email message.
 
 In practice, the core package handles:
 
-- input validation
+- input validation described in [Explanation: Validation](../explanation/validation.md)
 - header safety
 - message assembly
 - typed success and failure results
@@ -22,6 +24,8 @@ A transport adapter implements a single method:
 ```ts
 send(message): Promise<TransportSendResult>
 ```
+
+The exact type names and return shapes are defined in [Reference: API](../reference/api.md) and [Reference: Adapters](../reference/adapters.md).
 
 The message already contains:
 
@@ -79,6 +83,8 @@ const mailer = createFormMailer({
 - trust only the message shape already produced by `form-mailer`
 - prefer typed errors for transport failures when possible
 - keep provider-specific config out of the core package
+
+If you want the reasoning behind that separation, read [Explanation: Adapters](../explanation/adapters.md).
 
 ## Testing
 
