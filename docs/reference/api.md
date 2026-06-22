@@ -27,6 +27,71 @@ The returned mailer exposes:
 
 For the reasoning behind the validation pipeline, see [Explanation: Validation](../explanation/validation.md).
 
+## `createSmtpTransport(config)`
+
+Creates a transport that delivers outgoing mail over SMTP.
+
+Use it when you want to:
+
+- provide a transport explicitly to `createFormMailer()`
+- reuse the built-in SMTP behavior behind the shared transport interface
+- swap between SMTP and custom adapters without changing the mailer contract
+
+The `config` object uses `SmtpConnectionConfig`, which supports:
+
+- `host`
+- `port`
+- `secure`
+- `starttls`
+- `username`
+- `password`
+- `tls`
+
+Important behavior:
+
+- `host` is required for a real SMTP connection
+- `port` defaults to `465` when `secure` is true
+- `port` defaults to `587` otherwise
+- `starttls` upgrades a non-implicit TLS connection after `EHLO`
+- authentication runs only when both `username` and `password` are present
+
+For transport-level expectations, see [Reference: Adapters](./adapters.md).
+
+## `loadConfigFromEnv()`
+
+Loads a `FormMailerConfig` from environment variables.
+
+The loader:
+
+- reads `process.env` by default
+- optionally loads a dotenv-style file from `FORM_MAILER_ENV_PATH`
+- lets live environment variables override values from that file
+
+It returns a promise because reading the optional env file is asynchronous.
+
+For the supported environment variables and practical setup guidance, use [How-To: Configuration](../how-to/configuration.md).
+
+## `createFormMailerError(code, message, details?)`
+
+Creates a typed `FormMailerError`.
+
+Use it when you want your own code to return or throw errors that match the package error shape.
+
+The resulting error includes:
+
+- `message`
+- `code`
+- optional `details`
+
+## `isFormMailerError(value)`
+
+Checks whether an unknown value matches the package error shape.
+
+Use it when you need to narrow an unknown error before reading:
+
+- `error.code`
+- `error.details`
+
 ## Submission shape
 
 `FormMailSubmission` supports:
@@ -37,8 +102,14 @@ For the reasoning behind the validation pipeline, see [Explanation: Validation](
 - `message`
 - `recipientKey`
 - `origin`
-- `honeypot`
 - `fields`
+
+Details worth calling out:
+
+- there is no permanently reserved top-level honeypot property in the validation flow
+- the honeypot is resolved by the configured `honeypotFieldName`
+- that field name can point at a top-level submission property or a value inside `submission.fields`
+- a property literally named `honeypot` is only meaningful if you configure `honeypotFieldName: 'honeypot'`
 
 ## Configuration shape
 

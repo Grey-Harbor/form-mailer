@@ -14,7 +14,26 @@ npm install @greyharbor/form-mailer
 
 ## Create a mailer
 
+TypeScript example:
+
 ```ts
+import { createFormMailer } from '@greyharbor/form-mailer';
+
+const mailer = createFormMailer({
+  from: 'no-reply@example.com',
+  to: ['support@example.com'],
+  smtp: {
+    host: process.env.SMTP_HOST,
+    username: process.env.SMTP_USERNAME,
+    password: process.env.SMTP_PASSWORD,
+    starttls: true,
+  },
+});
+```
+
+JavaScript example:
+
+```js
 import { createFormMailer } from '@greyharbor/form-mailer';
 
 const mailer = createFormMailer({
@@ -31,7 +50,26 @@ const mailer = createFormMailer({
 
 ## Send a submission
 
+TypeScript example:
+
 ```ts
+const result = await mailer.send({
+  name: 'Ada Lovelace',
+  email: 'ada@example.com',
+  message: 'I would like to get in touch.',
+  fields: {
+    topic: 'product question',
+  },
+});
+
+if (!result.ok) {
+  console.error(result.error.code, result.error.message);
+}
+```
+
+JavaScript example:
+
+```js
 const result = await mailer.send({
   name: 'Ada Lovelace',
   email: 'ada@example.com',

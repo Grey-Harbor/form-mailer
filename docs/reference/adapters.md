@@ -25,10 +25,22 @@ The adapter is responsible for:
 
 The transport interface is intentionally small:
 
+TypeScript shape:
+
 ```ts
 interface MailTransport {
   send(message: OutgoingMail): Promise<TransportSendResult>;
 }
+```
+
+JavaScript shape:
+
+```js
+const transport = {
+  async send(message) {
+    return {};
+  },
+};
 ```
 
 ## `OutgoingMail`

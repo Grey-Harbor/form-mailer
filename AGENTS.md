@@ -30,6 +30,7 @@
 - Keep `README.md`, `PLAN.md`, and `ARCHITECTURE.md` aligned with implementation changes that affect behavior or defaults.
 - Keep end-user documentation in `./docs` and organize it with Diátaxis: tutorial, how-to, reference, explanation.
 - When docs mention another contract, topic, or workflow that already has a home, add a contextual link to that page instead of leaving it as plain text or using vague phrases like "see here".
+- When a doc includes TypeScript usage examples for a package feature that JavaScript consumers would use directly, add a JavaScript companion example unless the page is intentionally type-contract-only.
 - Keep the documentation tone concise and detailed without sounding robotic; it should feel like Grey Harbor writing: calm, practical, independent, and technically confident without marketing fluff.
 - Keep the root `README.md` as a landing page, not a long-form guide.
 - When writing PR bodies, release notes, or other Markdown handoff files, always use real line breaks instead of literal `\n` escape sequences.
