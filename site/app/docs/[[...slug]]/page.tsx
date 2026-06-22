@@ -14,6 +14,18 @@ interface DocsPageProps {
   }>;
 }
 
+const docsIndexDescription =
+  'Browse form-mailer tutorials, how-to guides, API reference, and explanation to get from first setup to exact integration details.';
+
+const docsIndexKeywords = [
+  'form-mailer documentation',
+  'form-mailer tutorial',
+  'form-mailer API reference',
+  'form-mailer guides',
+  'Node.js form-to-email docs',
+  'TypeScript form-to-email docs',
+] as const;
+
 export function generateStaticParams() {
   return getDocParams();
 }
@@ -27,12 +39,20 @@ export async function generateMetadata({ params }: DocsPageProps): Promise<Metad
   }
 
   const title = page.title ?? titleForDoc(page.filePath.replace(/\.md$/, ''), 'Documentation');
+  const isDocsIndex = (slug ?? []).length === 0;
+  const description = isDocsIndex ? docsIndexDescription : page.description;
 
-  return buildPageMetadata({
+  const metadata = buildPageMetadata({
     title,
-    description: page.description,
+    description,
     canonicalPath: routeFromSlug(slug ?? []),
   });
+
+  if (isDocsIndex) {
+    metadata.keywords = [...docsIndexKeywords];
+  }
+
+  return metadata;
 }
 
 export default async function DocsPageRoute({ params }: DocsPageProps) {

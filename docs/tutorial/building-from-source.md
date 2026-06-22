@@ -97,7 +97,7 @@ npm run build
 Preview the built static site from the repository root:
 
 ```bash
-npm run preview
+npm run site:preview
 ```
 
 From `./site`, the equivalent preview command is:

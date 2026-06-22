@@ -50,7 +50,7 @@ If you change the site or docs, also preview the Pages output locally:
 
 ```bash
 npm run site:build
-npm run preview
+npm run site:preview
 ```
 
 From `./site`, the equivalent commands are:
