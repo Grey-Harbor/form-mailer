@@ -2,6 +2,8 @@
 
 This tutorial gets you to a first useful `form-mailer` setup with the fewest moving parts.
 
+The package works well in a normal Node.js application and can be consumed from JavaScript or TypeScript.
+
 For the full config surface after you have this working, continue with [How-To: Configuration](../how-to/configuration.md).
 
 ## Install

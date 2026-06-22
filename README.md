@@ -7,7 +7,7 @@
 
 `form-mailer` is a compact way to turn form submissions into email without dragging a full mail platform into your app.
 
-It gives your product a calm, reliable email layer that stays easy to understand, easy to embed, and easy to teach from.
+It gives your product a calm, reliable email layer that stays easy to understand, easy to embed, and easy to teach from in standard Node.js applications as well as serverless handlers.
 
 ## Why it exists
 
@@ -27,6 +27,7 @@ That is the space `form-mailer` is built for.
 Use `form-mailer` when you want to:
 
 - add contact, support, lead, or workflow email handling to an existing app
+- use the same package from JavaScript or TypeScript in a Node.js codebase
 - keep delivery logic small enough to reason about quickly
 - swap transports without redesigning the application
 - demonstrate simple deployment patterns across multiple environments
@@ -48,6 +49,7 @@ The project is guided by a simple set of goals:
 
 - stay framework-agnostic
 - stay TypeScript-first
+- stay easy to consume from plain JavaScript projects
 - keep the dependency footprint small
 - keep the default path safe and predictable
 - support multiple runtime environments through separate adapters
