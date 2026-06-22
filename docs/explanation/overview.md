@@ -18,6 +18,7 @@ Diátaxis helps keep each documentation page focused:
 - explanation pages capture reasoning and tradeoffs
 
 For adapter-specific guidance, see [How-to: Adapters](../how-to/adapters.md) and [Explanation: Adapters](./adapters.md).
+For the validation pipeline and why it runs before transport work, see [Explanation: Validation](./validation.md).
 
 ## Design priorities
 

@@ -4,5 +4,5 @@ This path is for exact technical detail. Use these pages when you want to confir
 
 ## Pages in this path
 
-- [API](./api.md) - review the public entrypoints, config shapes, env loading, and result types
+- [API](./api.md) - review the public entrypoints, validation rules, config shapes, and result types
 - [Adapters](./adapters.md) - inspect the transport interface and adapter expectations

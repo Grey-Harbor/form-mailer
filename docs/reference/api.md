@@ -25,6 +25,8 @@ The returned mailer exposes:
 
 `send(submission)` validates first, then returns a promise for a typed delivery outcome.
 
+For the reasoning behind the validation pipeline, see [Explanation: Validation](../explanation/validation.md).
+
 ## Submission shape
 
 `FormMailSubmission` supports:
@@ -63,6 +65,51 @@ Details worth calling out:
 - `honeypotFieldName` defaults to `website` when omitted
 - `requiredFields` defaults to an empty list
 - `maxPayloadBytes` defaults to `64 * 1024`
+
+## Validation behavior
+
+`validate(submission)` checks the submission in this order:
+
+1. submitter email
+2. configured required fields
+3. honeypot field
+4. origin allowlist
+5. payload size
+
+The returned `ValidationResult` always includes:
+
+- `ok`
+- `issues`
+
+Each `ValidationIssue` includes:
+
+- `field`
+- `code`
+- `message`
+
+Validation accumulates issues.
+It does not stop after the first failure.
+
+Current issue codes are:
+
+- `invalid_email`
+- `required_field_missing`
+- `honeypot_triggered`
+- `origin_missing`
+- `origin_invalid`
+- `origin_not_allowed`
+- `payload_too_large`
+
+Notes worth calling out:
+
+- `email` is checked with a lightweight address-shape regex after trimming
+- `requiredFields` checks top-level submission properties first and `submission.fields` second
+- only `undefined`, `null`, and `''` count as empty for `requiredFields` and honeypot checks
+- `honeypotFieldName` defaults to `website`
+- the honeypot check only asks whether the field was populated at all
+- `originAllowlist` expects full origins such as `https://example.com`
+- origin comparison is done against the normalized `new URL(submission.origin).origin` value
+- `maxPayloadBytes` is measured against the JSON-serialized submission body
 
 ## Environment loading
 

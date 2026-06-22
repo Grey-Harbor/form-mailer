@@ -6,3 +6,4 @@ This path is for design reasoning and architectural context. Use these pages whe
 
 - [Overview](./overview.md) - read the main design goals and Diátaxis rationale
 - [Adapters](./adapters.md) - learn why the adapter layer exists and what it buys the project
+- [Validation](./validation.md) - understand the validation order, issue codes, and sanitization model

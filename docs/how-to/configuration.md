@@ -88,6 +88,8 @@ FORM_MAILER_RECIPIENTS='support:support@example.com,sales:sales@example.com'
 - leave `honeypotFieldName` at `website` unless your form already uses that field name
 - use full origins such as `https://example.com` in `originAllowlist`
 
+For the full validation flow and issue codes, see [Explanation: Validation](../explanation/validation.md) and [Reference: API](../reference/api.md).
+
 ## Code-first options
 
 The code API supports a few configuration patterns that do not map directly to environment variables:
