@@ -1,3 +1,6 @@
+![form-mailer](https://form-mailer.greyharborsoftware.com/brand/social-card.png)
+
+[![CI](https://github.com/Grey-Harbor/form-mailer/actions/workflows/ci.yml/badge.svg)](https://github.com/Grey-Harbor/form-mailer/actions/workflows/ci.yml)
 [![npm version](https://badge.fury.io/js/@greyharbor%2Fform-mailer.svg)](https://badge.fury.io/js/@greyharbor%2Fform-mailer)
 
 # form-mailer
