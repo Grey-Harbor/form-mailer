@@ -2,13 +2,15 @@
 
 `form-mailer` uses adapters so delivery logic stays separate from the core submission workflow.
 
+For the exact transport contract, see [Reference: Adapters](../reference/adapters.md).
+
 ## Why adapters exist
 
 Adapters let the package keep one stable public API while supporting different delivery paths.
 
 That means the core can stay focused on:
 
-- validation
+- validation described in [Explanation: Validation](./validation.md)
 - message formatting
 - result handling
 - security checks
@@ -39,3 +41,5 @@ That makes room for:
 - future provider-specific transports
 
 The core package stays stable while the adapter layer grows around it.
+
+If you want to build one yourself, continue with [How-To: Implement an Adapter](../how-to/adapters.md).

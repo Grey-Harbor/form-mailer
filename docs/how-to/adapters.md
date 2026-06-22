@@ -2,13 +2,15 @@
 
 This guide walks through the shape of a transport adapter for `form-mailer`.
 
+For the exact adapter contract, see [Reference: Adapters](../reference/adapters.md).
+
 ## What an adapter does
 
 An adapter is a small transport implementation that knows how to deliver an already-built email message.
 
 In practice, the core package handles:
 
-- input validation
+- input validation described in [Explanation: Validation](../explanation/validation.md)
 - header safety
 - message assembly
 - typed success and failure results
@@ -19,8 +21,20 @@ An adapter handles delivery only.
 
 A transport adapter implements a single method:
 
+TypeScript shape:
+
 ```ts
 send(message): Promise<TransportSendResult>
+```
+
+The exact type names and return shapes are defined in [Reference: API](../reference/api.md) and [Reference: Adapters](../reference/adapters.md).
+
+JavaScript shape:
+
+```js
+async send(message) {
+  // return { messageId: 'provider-message-id' }
+}
 ```
 
 The message already contains:
@@ -41,6 +55,8 @@ The message already contains:
 
 ## Example shape
 
+TypeScript example:
+
 ```ts
 import type { MailTransport, OutgoingMail, TransportSendResult } from '@greyharbor/form-mailer';
 
@@ -57,11 +73,42 @@ export function createExampleTransport(apiKey: string): MailTransport {
 }
 ```
 
+JavaScript example:
+
+```js
+export function createExampleTransport(apiKey) {
+  return {
+    async send(message) {
+      // Deliver `message` using your provider here.
+      // Return a message id if the provider gives you one.
+      void apiKey;
+      void message;
+      return { messageId: 'provider-message-id' };
+    },
+  };
+}
+```
+
 ## Using the adapter
 
 Pass the adapter into `createFormMailer()` as `transport`:
 
+TypeScript example:
+
 ```ts
+import { createFormMailer } from '@greyharbor/form-mailer';
+import { createExampleTransport } from './example-transport.js';
+
+const mailer = createFormMailer({
+  from: 'no-reply@example.com',
+  to: ['support@example.com'],
+  transport: createExampleTransport(process.env.EXAMPLE_API_KEY ?? ''),
+});
+```
+
+JavaScript example:
+
+```js
 import { createFormMailer } from '@greyharbor/form-mailer';
 import { createExampleTransport } from './example-transport.js';
 
@@ -79,6 +126,8 @@ const mailer = createFormMailer({
 - trust only the message shape already produced by `form-mailer`
 - prefer typed errors for transport failures when possible
 - keep provider-specific config out of the core package
+
+If you want the reasoning behind that separation, read [Explanation: Adapters](../explanation/adapters.md).
 
 ## Testing
 

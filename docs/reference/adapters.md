@@ -2,14 +2,16 @@
 
 This page describes the transport adapter contract used by `form-mailer`.
 
+If you want implementation steps instead of contract detail, use [How-To: Implement an Adapter](../how-to/adapters.md).
+
 ## Core idea
 
 An adapter is a transport implementation that receives a fully assembled email message and delivers it.
 
 The core package is responsible for:
 
-- validation
-- header sanitization
+- validation documented in [Explanation: Validation](../explanation/validation.md)
+- header sanitization described in [Explanation: Validation](../explanation/validation.md)
 - message assembly
 - typed results
 
@@ -23,10 +25,22 @@ The adapter is responsible for:
 
 The transport interface is intentionally small:
 
+TypeScript shape:
+
 ```ts
 interface MailTransport {
   send(message: OutgoingMail): Promise<TransportSendResult>;
 }
+```
+
+JavaScript shape:
+
+```js
+const transport = {
+  async send(message) {
+    return {};
+  },
+};
 ```
 
 ## `OutgoingMail`
@@ -41,6 +55,8 @@ interface MailTransport {
 - `html`
 
 The adapter should treat these values as ready for delivery.
+
+The submission-facing validation and config rules that produce those values are described in [Reference: API](./api.md).
 
 ## `TransportSendResult`
 
@@ -64,6 +80,8 @@ Recommended behavior:
 
 `createSmtpTransport()` is the built-in adapter for SMTP delivery.
 
+For a first working SMTP setup, see [Tutorial: Getting Started](../tutorial/getting-started.md).
+
 It is exposed as a public entrypoint so callers can use the same transport interface with custom or built-in adapters.
 
 ## Integration points
@@ -73,3 +91,5 @@ To use an adapter, pass it to `createFormMailer()` as `transport`.
 If `transport` is present, the core mailer uses it directly.
 
 If `transport` is omitted, the mailer falls back to the SMTP config path.
+
+The `transport` and `smtp` configuration fields are defined in [Reference: API](./api.md).

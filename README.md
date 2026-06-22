@@ -7,7 +7,7 @@
 
 `form-mailer` is a compact way to turn form submissions into email without dragging a full mail platform into your app.
 
-It gives your product a calm, reliable email layer that stays easy to understand, easy to embed, and easy to teach from.
+It gives your product a calm, reliable email layer that stays easy to understand, easy to embed, and easy to teach from in standard Node.js applications as well as serverless handlers.
 
 ## Why it exists
 
@@ -27,6 +27,7 @@ That is the space `form-mailer` is built for.
 Use `form-mailer` when you want to:
 
 - add contact, support, lead, or workflow email handling to an existing app
+- use the same package from JavaScript or TypeScript in a Node.js codebase
 - keep delivery logic small enough to reason about quickly
 - swap transports without redesigning the application
 - demonstrate simple deployment patterns across multiple environments
@@ -48,6 +49,7 @@ The project is guided by a simple set of goals:
 
 - stay framework-agnostic
 - stay TypeScript-first
+- stay easy to consume from plain JavaScript projects
 - keep the dependency footprint small
 - keep the default path safe and predictable
 - support multiple runtime environments through separate adapters
@@ -75,36 +77,6 @@ It is not intended to become:
 - [How-to Guides](./docs/how-to/README.md)
 - [Reference](./docs/reference/README.md)
 - [Explanation](./docs/explanation/README.md)
-
-## Site preview
-
-Use the root scripts to build and preview the GitHub Pages site locally:
-
-```bash
-npm run site:build
-npm run preview
-```
-
-From `./site`, the equivalent commands are:
-
-```bash
-npm run build
-npm run preview
-```
-
-The preview serves the static export, so it is the right local QA path for Pages behavior.
-
-## Contribution flow
-
-Do work on a branch, then commit, push, and continue the pull request from that branch:
-
-```bash
-git switch -c codex/my-change
-git add -A
-git commit -m "feat(scope): describe the change"
-git push -u origin codex/my-change
-gh pr create --base main --head codex/my-change
-```
 
 ## Project notes
 

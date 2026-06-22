@@ -22,6 +22,8 @@ Values from the actual process environment override values loaded from the file.
 
 If the dotenv file contains `FORM_MAILER_SMTP_PASSWORD`, `form-mailer` logs a warning because secrets are safer in live environment variables than in shared files.
 
+The environment loader behavior is defined precisely in [Reference: API](../reference/api.md).
+
 ## Environment variables
 
 Most setups need:
@@ -56,6 +58,8 @@ Legacy sender aliases are still accepted:
 
 If you're using a local SMTP relay or a development server that does not require auth, you can omit the username and password values.
 
+For a minimal SMTP-backed example, see [Tutorial: Getting Started](../tutorial/getting-started.md).
+
 ## Recipient mapping
 
 `recipientMap` is a routing table, not a replacement for the default recipient list.
@@ -87,6 +91,8 @@ FORM_MAILER_RECIPIENTS='support:support@example.com,sales:sales@example.com'
 - keep `replyTo` aligned with the submitter email when you want replies to go back to the user
 - leave `honeypotFieldName` at `website` unless your form already uses that field name
 - use full origins such as `https://example.com` in `originAllowlist`
+
+For the full validation flow and issue codes, see [Explanation: Validation](../explanation/validation.md) and [Reference: API](../reference/api.md).
 
 ## Code-first options
 
