@@ -6,3 +6,4 @@ Tutorials should show the smallest complete path from install to success.
 ## Pages in this path
 
 - [Getting Started](./getting-started.md) - walk through the smallest useful `form-mailer` setup
+- [Build from Source](./building-from-source.md) - clone the repo, build the package, run checks, and preview the Pages site locally
