@@ -232,7 +232,11 @@ export function createSmtpTransport(
             // Ignore cleanup failures.
           }
         }
-        activeSocket.destroy();
+        try {
+          activeSocket.destroy();
+        } catch {
+          // Preserve the original SMTP failure if socket teardown is unhappy.
+        }
         if (error instanceof Error && 'code' in error) {
           throw error;
         }
