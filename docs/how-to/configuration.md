@@ -20,7 +20,7 @@ If you want to share a common set of defaults for a deployment or local app shel
 
 Values from the actual process environment override values loaded from the file.
 
-If the dotenv file contains `FORM_MAILER_SMTP_PASSWORD`, `form-mailer` logs a warning because secrets are safer in live environment variables than in shared files.
+If the dotenv file contains `FORM_MAILER_SMTP_PASSWORD` or `FORM_MAILER_SMTP_TOKEN`, `form-mailer` logs a warning because secrets are safer in live environment variables than in shared files.
 
 The environment loader behavior is defined precisely in [Reference: API](../reference/api.md).
 
@@ -41,8 +41,9 @@ The rest is optional:
 - `FORM_MAILER_SMTP_SECURE` (optional): set to `true` for implicit TLS
 - `FORM_MAILER_SMTP_STARTTLS` (optional): set to `true` to upgrade the connection with STARTTLS
 - `FORM_MAILER_SMTP_SERVERNAME` (optional): TLS server name override
-- `FORM_MAILER_SMTP_USERNAME` or `SMTP_UNAME` (optional): SMTP username
-- `FORM_MAILER_SMTP_PASSWORD` or `SMTP_TOKEN` (optional): SMTP password or token
+- `FORM_MAILER_SMTP_USERNAME` (optional): SMTP username
+- `FORM_MAILER_SMTP_PASSWORD` (optional): SMTP password
+- `FORM_MAILER_SMTP_TOKEN` (optional): SMTP token
 - `FORM_MAILER_SUBJECT` (optional): default subject line for outgoing mail
 - `FORM_MAILER_REPLY_TO` (optional): reply-to header override
 - `FORM_MAILER_ORIGIN_ALLOWLIST` (optional): comma-separated list of allowed submission origins
@@ -56,7 +57,7 @@ Legacy sender aliases are still accepted:
 - `FORM_MAILER_SENDER_EMAIL` can supply the sender email when `FORM_MAILER_FROM` is absent
 - `FORM_MAILER_SENDER_NAME` can supply the sender display name
 
-If you're using a local SMTP relay or a development server that does not require auth, you can omit the username and password values.
+If you're using a local SMTP relay or a development server that does not require auth, you can omit the username and secret values.
 
 For a minimal SMTP-backed example, see [Tutorial: Getting Started](../tutorial/getting-started.md).
 

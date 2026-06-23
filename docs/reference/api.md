@@ -187,15 +187,16 @@ Notes worth calling out:
 `loadConfigFromEnv()` reads the active process environment directly.
 
 If `FORM_MAILER_ENV_PATH` is set, it loads a dotenv-style file first and then lets process env values override the file defaults.
-If the file contains `FORM_MAILER_SMTP_PASSWORD`, the loader logs a warning because runtime environment variables are the preferred place for secrets.
+If the file contains `FORM_MAILER_SMTP_PASSWORD` or `FORM_MAILER_SMTP_TOKEN`, the loader logs a warning because runtime environment variables are the preferred place for secrets.
 
-The env loader also accepts these legacy aliases:
+The env loader reads these SMTP values:
 
 - `FORM_MAILER_FROM` is the primary sender value
 - `FORM_MAILER_SENDER_EMAIL` can supply the sender email when `FORM_MAILER_FROM` is absent
 - `FORM_MAILER_SENDER_NAME` can supply the sender display name
-- `FORM_MAILER_SMTP_USERNAME` falls back to `SMTP_UNAME`
-- `FORM_MAILER_SMTP_PASSWORD` falls back to `SMTP_TOKEN`
+- `FORM_MAILER_SMTP_USERNAME` supplies the SMTP username
+- `FORM_MAILER_SMTP_PASSWORD` supplies the SMTP password
+- `FORM_MAILER_SMTP_TOKEN` supplies the SMTP token
 
 ## Recipient mapping
 

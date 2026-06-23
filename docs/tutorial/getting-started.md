@@ -23,9 +23,9 @@ const mailer = createFormMailer({
   from: 'no-reply@example.com',
   to: ['support@example.com'],
   smtp: {
-    host: process.env.SMTP_HOST,
-    username: process.env.SMTP_USERNAME,
-    password: process.env.SMTP_PASSWORD,
+    host: process.env.FORM_MAILER_SMTP_HOST,
+    username: process.env.FORM_MAILER_SMTP_USERNAME,
+    password: process.env.FORM_MAILER_SMTP_PASSWORD,
     starttls: true,
   },
 });
@@ -40,13 +40,15 @@ const mailer = createFormMailer({
   from: 'no-reply@example.com',
   to: ['support@example.com'],
   smtp: {
-    host: process.env.SMTP_HOST,
-    username: process.env.SMTP_USERNAME,
-    password: process.env.SMTP_PASSWORD,
+    host: process.env.FORM_MAILER_SMTP_HOST,
+    username: process.env.FORM_MAILER_SMTP_USERNAME,
+    password: process.env.FORM_MAILER_SMTP_PASSWORD,
     starttls: true,
   },
 });
 ```
+
+If your provider issues a token instead of a password, use `FORM_MAILER_SMTP_TOKEN` for the secret value.
 
 ## Send a submission
 

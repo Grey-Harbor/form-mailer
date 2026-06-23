@@ -178,11 +178,13 @@ function parseDotenvFile(source: string): Record<string, string> {
 }
 
 function warnIfSecretIsInEnvFile(fileEnv: Record<string, string>): void {
-  if (fileEnv.FORM_MAILER_SMTP_PASSWORD) {
-    console.warn(
-      'form-mailer: FORM_MAILER_SMTP_PASSWORD was loaded from FORM_MAILER_ENV_PATH. ' +
-        'This is a security risk; prefer supplying secrets through the live environment instead.',
-    );
+  for (const secretName of ['FORM_MAILER_SMTP_PASSWORD', 'FORM_MAILER_SMTP_TOKEN'] as const) {
+    if (fileEnv[secretName]) {
+      console.warn(
+        `form-mailer: ${secretName} was loaded from FORM_MAILER_ENV_PATH. ` +
+          'This is a security risk; prefer supplying secrets through the live environment instead.',
+      );
+    }
   }
 }
 
@@ -221,8 +223,8 @@ function buildConfigFromEnv(env: NodeJS.ProcessEnv): FormMailerConfig {
       port: parseNumber(env.FORM_MAILER_SMTP_PORT),
       secure: env.FORM_MAILER_SMTP_SECURE === 'true',
       starttls: env.FORM_MAILER_SMTP_STARTTLS === 'true',
-      username: env.FORM_MAILER_SMTP_USERNAME ?? env.SMTP_UNAME,
-      password: env.FORM_MAILER_SMTP_PASSWORD ?? env.SMTP_TOKEN,
+      username: env.FORM_MAILER_SMTP_USERNAME,
+      password: env.FORM_MAILER_SMTP_TOKEN ?? env.FORM_MAILER_SMTP_PASSWORD,
       tls: {
         servername: env.FORM_MAILER_SMTP_SERVERNAME,
       },
