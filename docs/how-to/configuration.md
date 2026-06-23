@@ -20,7 +20,7 @@ If you want to share a common set of defaults for a deployment or local app shel
 
 Values from the actual process environment override values loaded from the file.
 
-If the dotenv file contains `FORM_MAILER_SMTP_PASSWORD` or `FORM_MAILER_SMTP_TOKEN`, `form-mailer` logs a warning because secrets are safer in live environment variables than in shared files.
+If the dotenv file contains `FORM_MAILER_SMTP_PASSWORD`, `FORM_MAILER_SMTP_TOKEN`, or `FORM_MAILER_HTTP_TOKEN`, `form-mailer` logs a warning because secrets are safer in live environment variables than in shared files.
 
 The environment loader behavior is defined precisely in [Reference: API](../reference/api.md).
 
@@ -30,7 +30,7 @@ Most setups need:
 
 - `FORM_MAILER_FROM`: sender mailbox used on the outgoing message
 - `FORM_MAILER_TO` or `FORM_MAILER_RECIPIENT_MAP`: where messages should be delivered
-- `FORM_MAILER_SMTP_HOST`: SMTP server hostname
+- either `FORM_MAILER_HTTP_URL` or `FORM_MAILER_SMTP_HOST`: choose one built-in transport
 
 The rest is optional:
 
@@ -44,6 +44,9 @@ The rest is optional:
 - `FORM_MAILER_SMTP_USERNAME` (optional): SMTP username
 - `FORM_MAILER_SMTP_PASSWORD` (optional): SMTP password
 - `FORM_MAILER_SMTP_TOKEN` (optional): SMTP token
+- `FORM_MAILER_HTTP_URL` (optional): full HTTP endpoint for the built-in REST transport
+- `FORM_MAILER_HTTP_TOKEN` (optional): bearer token for the built-in REST transport
+- `FORM_MAILER_HTTP_HEADERS` (optional): JSON object of additional HTTP headers with string values
 - `FORM_MAILER_SUBJECT` (optional): default subject line for outgoing mail
 - `FORM_MAILER_REPLY_TO` (optional): reply-to header override
 - `FORM_MAILER_ORIGIN_ALLOWLIST` (optional): comma-separated list of allowed submission origins
@@ -59,7 +62,9 @@ Legacy sender aliases are still accepted:
 
 If you're using a local SMTP relay or a development server that does not require auth, you can omit the username and secret values.
 
-For a minimal SMTP-backed example, see [Tutorial: Getting Started](../tutorial/getting-started.md).
+If `FORM_MAILER_HTTP_URL` and `FORM_MAILER_SMTP_HOST` are both set, `form-mailer` rejects the config instead of guessing which built-in transport you meant.
+
+For minimal built-in examples, see [Tutorial: Getting Started](../tutorial/getting-started.md).
 
 ## Recipient mapping
 

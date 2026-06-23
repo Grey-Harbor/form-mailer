@@ -31,7 +31,7 @@ Each adapter can focus on:
 
 ## How this fits the project
 
-This project treats SMTP as one adapter, not the entire product.
+This project treats SMTP and HTTP as adapters, not the entire product.
 
 That makes room for:
 

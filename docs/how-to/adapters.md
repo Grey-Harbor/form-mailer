@@ -93,6 +93,8 @@ export function createExampleTransport(apiKey) {
 
 Pass the adapter into `createFormMailer()` as `transport`:
 
+If your provider already matches the built-in HTTP transport shape, you can use `createHttpTransport()` directly instead of writing a custom adapter.
+
 TypeScript example:
 
 ```ts

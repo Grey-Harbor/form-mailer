@@ -5,6 +5,7 @@
 The package root exports the supported entrypoints:
 
 - `createFormMailer`
+- `createHttpTransport`
 - `createSmtpTransport`
 - `loadConfigFromEnv`
 - `createFormMailerError`
@@ -26,6 +27,32 @@ The returned mailer exposes:
 `send(submission)` validates first, then returns a promise for a typed delivery outcome.
 
 For the reasoning behind the validation pipeline, see [Explanation: Validation](../explanation/validation.md).
+
+## `createHttpTransport(config)`
+
+Creates a transport that delivers outgoing mail over an HTTP API.
+
+Use it when you want to:
+
+- provide a built-in REST transport explicitly to `createFormMailer()`
+- post the assembled `OutgoingMail` JSON shape to a provider endpoint
+- reuse the package's built-in bearer-token HTTP behavior instead of writing a custom adapter
+
+The `config` object uses `HttpTransportConfig`, which supports:
+
+- `url`
+- `token`
+- `headers`
+
+Important behavior:
+
+- `url` must be a valid absolute URL
+- requests always use `POST`
+- the request body is JSON serialized from `OutgoingMail`
+- `content-type` is always kept compatible with JSON delivery
+- `authorization: Bearer <token>` is added when `token` is present
+
+For transport-level expectations, see [Reference: Adapters](./adapters.md).
 
 ## `createSmtpTransport(config)`
 
@@ -125,6 +152,7 @@ Details worth calling out:
 - `requiredFields`
 - `maxPayloadBytes`
 - `transport`
+- `http`
 - `smtp`
 
 Details worth calling out:
@@ -132,7 +160,8 @@ Details worth calling out:
 - `from` can be a plain email string or a `{ name, email }` address object
 - `subject` can be a string or a function that receives the submission
 - `replyTo` can be a string or a function that receives the submission
-- `transport` is optional when `smtp` is provided
+- `transport` is optional when `http` or `smtp` is provided
+- `http` is optional when `transport` is provided
 - `honeypotFieldName` defaults to `website` when omitted
 - `requiredFields` defaults to an empty list
 - `maxPayloadBytes` defaults to `64 * 1024`
@@ -187,7 +216,7 @@ Notes worth calling out:
 `loadConfigFromEnv()` reads the active process environment directly.
 
 If `FORM_MAILER_ENV_PATH` is set, it loads a dotenv-style file first and then lets process env values override the file defaults.
-If the file contains `FORM_MAILER_SMTP_PASSWORD` or `FORM_MAILER_SMTP_TOKEN`, the loader logs a warning because runtime environment variables are the preferred place for secrets.
+If the file contains `FORM_MAILER_SMTP_PASSWORD`, `FORM_MAILER_SMTP_TOKEN`, or `FORM_MAILER_HTTP_TOKEN`, the loader logs a warning because runtime environment variables are the preferred place for secrets.
 
 The env loader reads these SMTP values:
 
@@ -197,6 +226,14 @@ The env loader reads these SMTP values:
 - `FORM_MAILER_SMTP_USERNAME` supplies the SMTP username
 - `FORM_MAILER_SMTP_PASSWORD` supplies the SMTP password
 - `FORM_MAILER_SMTP_TOKEN` supplies the SMTP token
+
+The env loader reads these HTTP values:
+
+- `FORM_MAILER_HTTP_URL` selects the built-in HTTP transport endpoint
+- `FORM_MAILER_HTTP_TOKEN` supplies the bearer token for the built-in HTTP transport
+- `FORM_MAILER_HTTP_HEADERS` supplies optional JSON headers with string values
+
+If both `FORM_MAILER_HTTP_URL` and `FORM_MAILER_SMTP_HOST` are set, `loadConfigFromEnv()` rejects with `config_error` instead of guessing which built-in transport to use.
 
 ## Recipient mapping
 

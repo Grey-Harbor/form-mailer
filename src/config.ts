@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { createFormMailerError } from './errors.js';
+import { createHttpTransport } from './http.js';
 import { createSmtpTransport } from './smtp.js';
 import type { FormMailerConfig } from './types.js';
 import { normalizeAddressList, resolveFromAddress } from './validation.js';
@@ -178,7 +179,7 @@ function parseDotenvFile(source: string): Record<string, string> {
 }
 
 function warnIfSecretIsInEnvFile(fileEnv: Record<string, string>): void {
-  for (const secretName of ['FORM_MAILER_SMTP_PASSWORD', 'FORM_MAILER_SMTP_TOKEN'] as const) {
+  for (const secretName of ['FORM_MAILER_SMTP_PASSWORD', 'FORM_MAILER_SMTP_TOKEN', 'FORM_MAILER_HTTP_TOKEN'] as const) {
     if (fileEnv[secretName]) {
       console.warn(
         `form-mailer: ${secretName} was loaded from FORM_MAILER_ENV_PATH. ` +
@@ -207,10 +208,47 @@ function parseNumber(value: string | undefined): number | undefined {
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
+function parseHttpHeaders(value: string | undefined): Record<string, string> | undefined {
+  if (!value?.trim()) {
+    return undefined;
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(value);
+  } catch {
+    throw createFormMailerError('config_error', 'FORM_MAILER_HTTP_HEADERS must be valid JSON.');
+  }
+
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw createFormMailerError('config_error', 'FORM_MAILER_HTTP_HEADERS must be a JSON object.');
+  }
+
+  const headers: Record<string, string> = {};
+  for (const [name, headerValue] of Object.entries(parsed as Record<string, unknown>)) {
+    if (typeof headerValue !== 'string') {
+      throw createFormMailerError('config_error', 'FORM_MAILER_HTTP_HEADERS values must be strings.');
+    }
+    headers[name] = headerValue;
+  }
+
+  return headers;
+}
+
 function buildConfigFromEnv(env: NodeJS.ProcessEnv): FormMailerConfig {
   const recipientMap = parseRecipientMapEnv(env);
   const explicitTo = normalizeAddressList(env.FORM_MAILER_TO);
   const rawFrom = env.FORM_MAILER_FROM ?? env.FORM_MAILER_SENDER_EMAIL;
+  const httpUrl = env.FORM_MAILER_HTTP_URL?.trim();
+  const smtpHost = env.FORM_MAILER_SMTP_HOST?.trim();
+  const httpHeaders = httpUrl ? parseHttpHeaders(env.FORM_MAILER_HTTP_HEADERS) : undefined;
+
+  if (httpUrl && smtpHost) {
+    throw createFormMailerError(
+      'config_error',
+      'FORM_MAILER_HTTP_URL and FORM_MAILER_SMTP_HOST cannot both be set. Choose one built-in transport.',
+    );
+  }
 
   return {
     from: resolveFromAddress({
@@ -218,8 +256,17 @@ function buildConfigFromEnv(env: NodeJS.ProcessEnv): FormMailerConfig {
       ...(env.FORM_MAILER_SENDER_NAME ? { name: env.FORM_MAILER_SENDER_NAME } : {}),
     }),
     to: explicitTo,
+    ...(httpUrl
+      ? {
+          http: {
+            url: httpUrl,
+            ...(env.FORM_MAILER_HTTP_TOKEN ? { token: env.FORM_MAILER_HTTP_TOKEN } : {}),
+            ...(httpHeaders ? { headers: httpHeaders } : {}),
+          },
+        }
+      : {}),
     smtp: {
-      host: env.FORM_MAILER_SMTP_HOST,
+      host: smtpHost,
       port: parseNumber(env.FORM_MAILER_SMTP_PORT),
       secure: env.FORM_MAILER_SMTP_SECURE === 'true',
       starttls: env.FORM_MAILER_SMTP_STARTTLS === 'true',
@@ -267,8 +314,15 @@ export function createTransportFromConfig(config: FormMailerConfig) {
     return config.transport;
   }
 
+  if (config.http) {
+    return createHttpTransport(config.http);
+  }
+
   if (!config.smtp) {
-    throw createFormMailerError('config_error', 'SMTP configuration is required when no transport is provided.');
+    throw createFormMailerError(
+      'config_error',
+      'SMTP or HTTP configuration is required when no transport is provided.',
+    );
   }
 
   return createSmtpTransport(config.smtp);

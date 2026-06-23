@@ -22,7 +22,7 @@ It demonstrates:
 
 - a `fetch`-based Worker entrypoint
 - request parsing from JSON form submissions
-- a fetch-based webhook transport adapter similar to the pattern in [How-To: Implement an Adapter](./adapters.md)
+- the built-in HTTP transport pointed at a webhook-style endpoint
 
 See [`examples/cloudflare-worker/README.md`](../../examples/cloudflare-worker/README.md) for the environment variables and request shape.
 
@@ -36,7 +36,7 @@ It demonstrates:
 
 - a Lambda handler that works with API Gateway-style events
 - the same shared demo mailer factory used by the Worker example
-- the same webhook transport adapter pattern described in [How-To: Implement an Adapter](./adapters.md)
+- the same built-in HTTP transport path used by the Worker example
 
 See [`examples/aws-lambda/README.md`](../../examples/aws-lambda/README.md) for the environment variables and request shape.
 
@@ -47,7 +47,7 @@ Those names are example-specific and feed the shared demo factory rather than th
 Both demos reuse:
 
 - the runtime-neutral mailer core in `src/mailer.ts`
-- the shared webhook transport in `examples/shared/webhook-transport.ts`
+- the shared HTTP transport helper in `examples/shared/http-transport.ts`
 - the same submission contract defined by `FormMailSubmission` in [Reference: API](../reference/api.md)
 
 ## When to use these demos

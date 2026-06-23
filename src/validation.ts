@@ -209,8 +209,8 @@ export function resolveFromAddress(from: string | MailAddress | { email: string;
 }
 
 export function resolveConfig(config: FormMailerConfig): ResolvedFormMailerConfig {
-  if (!config.transport && !config.smtp) {
-    throw createFormMailerError('config_error', 'Either a transport or SMTP config must be provided.');
+  if (!config.transport && !config.http && !config.smtp) {
+    throw createFormMailerError('config_error', 'Either a transport, HTTP config, or SMTP config must be provided.');
   }
 
   const from = resolveFromAddress(config.from);

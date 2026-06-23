@@ -33,6 +33,12 @@ export interface SmtpConnectionConfig {
   };
 }
 
+export interface HttpTransportConfig {
+  url: string;
+  token?: string | undefined;
+  headers?: Record<string, string> | undefined;
+}
+
 export interface FormMailerConfig {
   from: string | MailAddress;
   to?: string | string[] | undefined;
@@ -44,6 +50,7 @@ export interface FormMailerConfig {
   requiredFields?: string[] | undefined;
   maxPayloadBytes?: number | undefined;
   transport?: MailTransport | undefined;
+  http?: HttpTransportConfig | undefined;
   smtp?: SmtpConnectionConfig | undefined;
 }
 
