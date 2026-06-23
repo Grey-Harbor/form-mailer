@@ -1,14 +1,14 @@
-# @greyharbor/form-mailer 0.1.5
+# @greyharbor/form-mailer 0.1.6
 
-Release tag: `v0.1.5`
+Release tag: `v0.1.6`
 
-This release refreshes the package scope and release versioning for the `greyharbor` organization while preserving the core mailer API, default SMTP transport, and documentation path for future adapters and deployment examples.
+This release keeps the package scoped to the `greyharbor` organization and folds in the SMTP cleanup fix so Workers-style runtimes preserve the original relay failure instead of surfacing a secondary reader lock error during teardown.
 
 ## GitHub Release Blurb
 
-`@greyharbor/form-mailer` 0.1.5 is the current scoped release of the package.
+`@greyharbor/form-mailer` 0.1.6 is the current scoped release of the package.
 
-It includes env-first configuration, typed validation and delivery results, `recipientKey` routing, and the default SMTP transport. The package is ready for embeddable app and serverless use, with docs and examples laid out for future runtime-specific adapters.
+It includes env-first configuration, typed validation and delivery results, `recipientKey` routing, the default SMTP transport, and the SMTP teardown fix for Workers-style runtimes. The package is ready for embeddable app and serverless use, with docs and examples laid out for future runtime-specific adapters.
 
 ## Highlights
 
@@ -20,11 +20,12 @@ It includes env-first configuration, typed validation and delivery results, `rec
 - typed success and failure results for mail delivery
 - runtime-neutral core mailer flow for embeddable and serverless usage
 - starter examples for Cloudflare Workers and AWS Lambda
+- preserved SMTP relay errors during socket cleanup in Workers-style runtimes
 
 ## Packaging
 
 - published package name: `@greyharbor/form-mailer`
-- npm version: `0.1.5`
+- npm version: `0.1.6`
 - public package surface is limited to the built runtime output plus `README.md`
 
 ## Release Notes
