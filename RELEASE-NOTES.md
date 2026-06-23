@@ -14,7 +14,7 @@ It includes env-first configuration, typed validation and delivery results, `rec
 
 - env-first configuration with optional `FORM_MAILER_ENV_PATH` loading
 - process environment overrides dotenv-style defaults
-- warning when `FORM_MAILER_SMTP_PASSWORD` is loaded from the env file
+- warning when `FORM_MAILER_SMTP_PASSWORD` or `FORM_MAILER_SMTP_TOKEN` is loaded from the env file
 - `recipientMap` routing keyed by `recipientKey`
 - validation and sanitization before transport work begins
 - typed success and failure results for mail delivery

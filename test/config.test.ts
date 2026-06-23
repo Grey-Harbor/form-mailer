@@ -37,7 +37,7 @@ test('loads defaults from FORM_MAILER_ENV_PATH and lets process env win', { conc
       'FORM_MAILER_TO=file-recipient@example.com',
       'FORM_MAILER_SMTP_HOST=smtp.file.example.com',
       'FORM_MAILER_SMTP_USERNAME=file-user',
-      'FORM_MAILER_SMTP_PASSWORD=file-secret',
+      'FORM_MAILER_SMTP_TOKEN=file-secret',
       'FORM_MAILER_SUBJECT=from file',
       'FORM_MAILER_RECIPIENT_MAP={"support":"support@example.com"}',
     ].join('\n'),
@@ -58,7 +58,7 @@ test('loads defaults from FORM_MAILER_ENV_PATH and lets process env win', { conc
   assert.deepEqual(config.recipientMap, { support: ['support@example.com'] });
 });
 
-test('warns when FORM_MAILER_SMTP_PASSWORD is loaded from FORM_MAILER_ENV_PATH', { concurrency: false }, async () => {
+test('warns when SMTP secrets are loaded from FORM_MAILER_ENV_PATH', { concurrency: false }, async () => {
   const dir = await mkdtemp(join(tmpdir(), 'form-mailer-'));
   const envFile = join(dir, '.env');
   await writeFile(
@@ -67,7 +67,8 @@ test('warns when FORM_MAILER_SMTP_PASSWORD is loaded from FORM_MAILER_ENV_PATH',
       'FORM_MAILER_FROM=file@example.com',
       'FORM_MAILER_TO=file-recipient@example.com',
       'FORM_MAILER_SMTP_HOST=smtp.file.example.com',
-      'FORM_MAILER_SMTP_PASSWORD=file-secret',
+      'FORM_MAILER_SMTP_PASSWORD=file-password',
+      'FORM_MAILER_SMTP_TOKEN=file-token',
     ].join('\n'),
   );
 
@@ -80,14 +81,27 @@ test('warns when FORM_MAILER_SMTP_PASSWORD is loaded from FORM_MAILER_ENV_PATH',
   try {
     await loadConfigFromEnv({
       FORM_MAILER_ENV_PATH: envFile,
-      FORM_MAILER_SMTP_PASSWORD: 'runtime-secret',
+      FORM_MAILER_SMTP_PASSWORD: 'runtime-password',
+      FORM_MAILER_SMTP_TOKEN: 'runtime-token',
     });
   } finally {
     console.warn = originalWarn;
   }
 
   assert.ok(warnings.some((warning) => warning.includes('FORM_MAILER_SMTP_PASSWORD')));
+  assert.ok(warnings.some((warning) => warning.includes('FORM_MAILER_SMTP_TOKEN')));
   assert.ok(warnings.some((warning) => warning.includes('prefer supplying secrets through the live environment')));
+});
+
+test('does not use SMTP_UNAME as a username alias', { concurrency: false }, async () => {
+  const config = await loadConfigFromEnv({
+    FORM_MAILER_FROM: 'sender@example.com',
+    FORM_MAILER_TO: 'recipient@example.com',
+    FORM_MAILER_SMTP_HOST: 'smtp.example.com',
+    SMTP_UNAME: 'legacy-user',
+  });
+
+  assert.equal(config.smtp?.username, undefined);
 });
 
 test('rejects a missing FORM_MAILER_ENV_PATH file', { concurrency: false }, async () => {
