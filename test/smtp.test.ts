@@ -44,6 +44,13 @@ class ScriptedSocket extends EventEmitter {
   }
 }
 
+class ThrowingDestroySocket extends ScriptedSocket {
+  override destroy(): void {
+    super.destroy();
+    throw new Error('Cannot call releaseLock() on a reader with outstanding read promises.');
+  }
+}
+
 function makeTransport(
   config: SmtpConnectionConfig,
   hooks: {
@@ -140,4 +147,41 @@ test('cleans up after an SMTP rejection', async () => {
   assert.ok(socket.writes.some((entry) => entry.startsWith('RCPT TO:<recipient@example.com>')));
   assert.ok(socket.writes.includes('RSET\r\n'));
   assert.equal(socket.destroyed, true);
+});
+
+test('preserves the SMTP rejection when teardown throws', async () => {
+  const socket = new ThrowingDestroySocket([
+    ['220 mail.example.com ESMTP ready'],
+    ['250 mail.example.com greets you'],
+    ['250 OK'],
+    ['550 mailbox unavailable'],
+    ['250 RSET ok'],
+  ]);
+
+  const transport = makeTransport(
+    {
+      host: 'mail.example.com',
+    },
+    { connect: socket },
+  );
+
+  await assert.rejects(
+    () =>
+      transport.send({
+        from: 'sender@example.com',
+        to: ['recipient@example.com'],
+        subject: 'Hello',
+        text: 'Line 1',
+      }),
+    (error: unknown) =>
+      Boolean(
+        error &&
+          typeof error === 'object' &&
+          'code' in error &&
+          (error as { code?: unknown }).code === 'smtp_error' &&
+          'details' in error &&
+          typeof (error as { details?: unknown }).details === 'object' &&
+          (error as { details?: { response?: { code?: unknown } } }).details?.response?.code === 550,
+      ),
+  );
 });
