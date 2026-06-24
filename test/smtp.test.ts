@@ -44,9 +44,20 @@ class ScriptedSocket extends EventEmitter {
   }
 }
 
-class ThrowingDestroySocket extends ScriptedSocket {
+class ThrowingCloseSocket extends ScriptedSocket {
+  override end(): void {
+    super.end();
+    throw new Error('Cannot call releaseLock() on a reader with outstanding read promises.');
+  }
+
   override destroy(): void {
     super.destroy();
+    throw new Error('Cannot call releaseLock() on a reader with outstanding read promises.');
+  }
+}
+
+class ThrowingOffSocket extends ScriptedSocket {
+  override off(): this {
     throw new Error('Cannot call releaseLock() on a reader with outstanding read promises.');
   }
 }
@@ -117,13 +128,55 @@ test('sends a message through SMTP with STARTTLS and auth', async () => {
   assert.ok(secure.ended);
 });
 
+test('authenticates with token-only credentials', async () => {
+  const plain = new ScriptedSocket([
+    ['220 mail.example.com ESMTP ready'],
+    ['250 mail.example.com greets you'],
+    ['220 Ready to start TLS'],
+  ]);
+  const secure = new ScriptedSocket([
+    ['250 mail.example.com greets you again'],
+    ['334 VXNlcm5hbWU6'],
+    ['334 UGFzc3dvcmQ6'],
+    ['235 Authentication successful'],
+    ['250 2.1.0 Ok'],
+    ['250 2.1.5 Ok'],
+    ['354 End data with <CR><LF>.<CR><LF>'],
+    ['250 2.0.0 Message accepted'],
+    ['221 2.0.0 Bye'],
+  ]);
+
+  const transport = makeTransport(
+    {
+      host: 'mail.example.com',
+      starttls: true,
+      password: 'token-only-secret',
+      tls: {
+        servername: 'mail.example.com',
+      },
+    },
+    { connect: plain, upgrade: secure },
+  );
+
+  const result = await transport.send({
+    from: 'sender@example.com',
+    to: ['recipient@example.com'],
+    subject: 'Hello',
+    text: 'Line 1',
+  });
+
+  assert.equal(result.messageId, '<fixed-message-id@example.com>');
+  assert.ok(secure.writes.includes('AUTH LOGIN\r\n'));
+  assert.ok(secure.writes.includes('\r\n'));
+  assert.ok(secure.writes.some((entry) => entry.startsWith(Buffer.from('token-only-secret').toString('base64'))));
+});
+
 test('cleans up after an SMTP rejection', async () => {
   const socket = new ScriptedSocket([
     ['220 mail.example.com ESMTP ready'],
     ['250 mail.example.com greets you'],
     ['250 OK'],
     ['550 mailbox unavailable'],
-    ['250 RSET ok'],
   ]);
 
   const transport = makeTransport(
@@ -145,17 +198,52 @@ test('cleans up after an SMTP rejection', async () => {
   );
 
   assert.ok(socket.writes.some((entry) => entry.startsWith('RCPT TO:<recipient@example.com>')));
-  assert.ok(socket.writes.includes('RSET\r\n'));
-  assert.equal(socket.destroyed, true);
+  assert.ok(!socket.writes.includes('RSET\r\n'));
+  assert.equal(socket.ended, true);
 });
 
 test('preserves the SMTP rejection when teardown throws', async () => {
-  const socket = new ThrowingDestroySocket([
+  const socket = new ThrowingCloseSocket([
     ['220 mail.example.com ESMTP ready'],
     ['250 mail.example.com greets you'],
     ['250 OK'],
     ['550 mailbox unavailable'],
-    ['250 RSET ok'],
+  ]);
+
+  const transport = makeTransport(
+    {
+      host: 'mail.example.com',
+    },
+    { connect: socket },
+  );
+
+  await assert.rejects(
+    () =>
+      transport.send({
+        from: 'sender@example.com',
+        to: ['recipient@example.com'],
+        subject: 'Hello',
+        text: 'Line 1',
+      }),
+    (error: unknown) =>
+      Boolean(
+        error &&
+          typeof error === 'object' &&
+          'code' in error &&
+          (error as { code?: unknown }).code === 'smtp_error' &&
+          'details' in error &&
+          typeof (error as { details?: unknown }).details === 'object' &&
+          (error as { details?: { response?: { code?: unknown } } }).details?.response?.code === 550,
+      ),
+  );
+});
+
+test('preserves the SMTP rejection when reader teardown throws', async () => {
+  const socket = new ThrowingOffSocket([
+    ['220 mail.example.com ESMTP ready'],
+    ['250 mail.example.com greets you'],
+    ['250 OK'],
+    ['550 mailbox unavailable'],
   ]);
 
   const transport = makeTransport(
