@@ -5,6 +5,7 @@ import type { FormMailer, FormMailerConfig } from './types.js';
 
 export { loadConfigFromEnv } from './config.js';
 export { createFormMailerError, isFormMailerError } from './errors.js';
+export { createHttpTransport } from './http.js';
 export { createSmtpTransport } from './smtp.js';
 export type {
   FormMailer,
@@ -12,6 +13,8 @@ export type {
   FormMailerError,
   FormMailerErrorCode,
   FormMailSubmission,
+  HttpTransportConfig,
+  HttpTransportRequest,
   MailAddress,
   MailTransport,
   OutgoingMail,

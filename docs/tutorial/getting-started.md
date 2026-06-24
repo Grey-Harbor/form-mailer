@@ -14,6 +14,8 @@ npm install @greyharbor/form-mailer
 
 ## Create a mailer
 
+SMTP example:
+
 TypeScript example:
 
 ```ts
@@ -48,7 +50,41 @@ const mailer = createFormMailer({
 });
 ```
 
+If your HTTP provider expects a different request or response contract, keep the built-in transport and add code-level `mapRequest` or `parseResponse` hooks. For the exact hook shapes, see [Reference: API](../reference/api.md).
+
 If your provider issues a token instead of a password, use `FORM_MAILER_SMTP_TOKEN` for the secret value.
+
+HTTP example:
+
+TypeScript example:
+
+```ts
+import { createFormMailer } from '@greyharbor/form-mailer';
+
+const mailer = createFormMailer({
+  from: 'no-reply@example.com',
+  to: ['support@example.com'],
+  http: {
+    url: process.env.FORM_MAILER_HTTP_URL!,
+    token: process.env.FORM_MAILER_HTTP_TOKEN,
+  },
+});
+```
+
+JavaScript example:
+
+```js
+import { createFormMailer } from '@greyharbor/form-mailer';
+
+const mailer = createFormMailer({
+  from: 'no-reply@example.com',
+  to: ['support@example.com'],
+  http: {
+    url: process.env.FORM_MAILER_HTTP_URL,
+    token: process.env.FORM_MAILER_HTTP_TOKEN,
+  },
+});
+```
 
 ## Send a submission
 

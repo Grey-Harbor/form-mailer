@@ -1,7 +1,7 @@
 import { createFormMailerCore } from '../../src/mailer.js';
 import { resolveConfig } from '../../src/validation.js';
 import type { FormMailer } from '../../src/types.js';
-import { createWebhookTransport } from './webhook-transport.js';
+import { createDemoHttpTransport } from './http-transport.js';
 
 export interface DemoMailerOptions {
   from: string;
@@ -11,10 +11,7 @@ export interface DemoMailerOptions {
 }
 
 export function createDemoMailer(options: DemoMailerOptions): FormMailer {
-  const transport = createWebhookTransport({
-    endpoint: options.endpoint,
-    token: options.token,
-  });
+  const transport = createDemoHttpTransport(options.endpoint, options.token);
 
   const resolved = resolveConfig({
     from: options.from,

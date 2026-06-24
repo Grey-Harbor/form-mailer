@@ -76,7 +76,13 @@ Recommended behavior:
 - preserve provider response details when they are safe to surface
 - keep secrets out of error messages
 
-## Included adapter
+## Included adapters
+
+`createHttpTransport()` is the built-in adapter for HTTP API delivery.
+
+Use it when a provider expects an HTTP request instead of an SMTP session.
+
+By default it sends `OutgoingMail` as a JSON `POST`, but it also supports code-level request and response mapping for providers with their own REST contract shapes.
 
 `createSmtpTransport()` is the built-in adapter for SMTP delivery.
 
@@ -90,6 +96,6 @@ To use an adapter, pass it to `createFormMailer()` as `transport`.
 
 If `transport` is present, the core mailer uses it directly.
 
-If `transport` is omitted, the mailer falls back to the SMTP config path.
+If `transport` is omitted, the mailer falls back to the built-in HTTP or SMTP config path.
 
-The `transport` and `smtp` configuration fields are defined in [Reference: API](./api.md).
+The `transport`, `http`, and `smtp` configuration fields are defined in [Reference: API](./api.md).
