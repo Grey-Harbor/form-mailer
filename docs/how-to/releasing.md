@@ -23,7 +23,7 @@ Use Conventional Commits to decide the next semver bump:
 1. Update the version in `package.json`.
 2. Regenerate the lockfile only if dependencies changed.
 3. Commit the release version bump.
-4. Create and push a semver tag like `v0.1.6`.
+4. Create and push a semver tag like `v0.2.0`.
 5. Let GitHub Actions run the existing checks and publish with `npm publish --provenance`.
 
 The CI publish job should only run for tag pushes that match `v*`.
