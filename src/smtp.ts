@@ -7,6 +7,23 @@ import { buildRawMessage } from './mail.js';
 
 interface SmtpLineReader {
   nextLine(): Promise<string>;
+  close(error?: Error): void;
+}
+
+interface CloudflareSocket {
+  readable: ReadableStream<Uint8Array>;
+  writable: WritableStream<Uint8Array>;
+  opened: Promise<unknown>;
+  closed: Promise<void>;
+  close(): Promise<void>;
+  startTls(): CloudflareSocket;
+}
+
+interface CloudflareSocketsModule {
+  connect(
+    address: { hostname: string; port: number },
+    options?: { secureTransport?: 'off' | 'on' | 'starttls'; allowHalfOpen?: boolean },
+  ): CloudflareSocket;
 }
 
 export interface SmtpTransportHooks {
@@ -15,21 +32,43 @@ export interface SmtpTransportHooks {
   messageIdFactory?: () => string;
 }
 
+let cloudflareSocketsModulePromise: Promise<CloudflareSocketsModule | null> | null = null;
+
+async function loadCloudflareSocketsModule(): Promise<CloudflareSocketsModule | null> {
+  // @ts-expect-error cloudflare:sockets is only available in Workers runtimes.
+  cloudflareSocketsModulePromise ??= import('cloudflare:sockets')
+    .then((mod) => mod as unknown as CloudflareSocketsModule)
+    .catch(() => null);
+
+  return cloudflareSocketsModulePromise;
+}
+
 function createLineReader(socket: net.Socket | tls.TLSSocket): SmtpLineReader {
   let buffer = '';
-  const waiters: Array<(line: string) => void> = [];
+  const waiters: Array<{ resolve: (line: string) => void; reject: (error: Error) => void }> = [];
   const lines: string[] = [];
   let closedError: Error | null = null;
+  let closed = false;
 
   socket.setEncoding('utf8');
 
-  socket.on('data', (chunk: string) => {
+  const settleWaiters = (error: Error): void => {
+    while (waiters.length > 0) {
+      waiters.shift()?.reject(error);
+    }
+  };
+
+  const onData = (chunk: string) => {
+    if (closed) {
+      return;
+    }
+
     buffer += chunk;
     let index = buffer.indexOf('\n');
     while (index !== -1) {
       const line = buffer.slice(0, index).replace(/\r$/, '');
       buffer = buffer.slice(index + 1);
-      const waiter = waiters.shift();
+      const waiter = waiters.shift()?.resolve;
       if (waiter) {
         waiter(line);
       } else {
@@ -37,23 +76,23 @@ function createLineReader(socket: net.Socket | tls.TLSSocket): SmtpLineReader {
       }
       index = buffer.indexOf('\n');
     }
-  });
+  };
 
-  socket.on('error', (error: Error) => {
+  const onError = (error: Error) => {
     closedError = error;
-    const waiter = waiters.shift();
-    if (waiter) {
-      waiter('');
-    }
-  });
+    settleWaiters(error);
+  };
 
-  socket.on('close', () => {
+  const onClose = () => {
     closedError ??= new Error('SMTP connection closed.');
-    const waiter = waiters.shift();
-    if (waiter) {
-      waiter('');
+    if (closedError) {
+      settleWaiters(closedError);
     }
-  });
+  };
+
+  socket.on('data', onData);
+  socket.on('error', onError);
+  socket.on('close', onClose);
 
   return {
     nextLine() {
@@ -66,14 +105,32 @@ function createLineReader(socket: net.Socket | tls.TLSSocket): SmtpLineReader {
       }
 
       return new Promise<string>((resolve, reject) => {
-        waiters.push((line) => {
-          if (closedError) {
-            reject(closedError);
-            return;
-          }
-          resolve(line);
-        });
+        waiters.push({ resolve, reject });
       });
+    },
+    close(error = new Error('SMTP reader closed.')) {
+      if (closed) {
+        return;
+      }
+
+      closed = true;
+      closedError ??= error;
+      try {
+        socket.off('data', onData);
+      } catch {
+        // Some runtimes throw while detaching a locked reader.
+      }
+      try {
+        socket.off('error', onError);
+      } catch {
+        // Preserve the original SMTP failure.
+      }
+      try {
+        socket.off('close', onClose);
+      } catch {
+        // Preserve the original SMTP failure.
+      }
+      settleWaiters(closedError);
     },
   };
 }
@@ -103,6 +160,33 @@ async function readResponse(reader: SmtpLineReader): Promise<{ code: number; lin
 
 async function writeCommand(socket: net.Socket | tls.TLSSocket, command: string): Promise<void> {
   socket.write(`${command}\r\n`);
+}
+
+async function writeStreamCommand(writer: WritableStreamDefaultWriter<Uint8Array>, command: string): Promise<void> {
+  const encoder = new TextEncoder();
+  await writer.write(encoder.encode(`${command}\r\n`));
+}
+
+async function closeWriter(writer: WritableStreamDefaultWriter<Uint8Array>): Promise<void> {
+  try {
+    await writer.close();
+  } catch {
+    // Preserve the SMTP failure that caused cleanup.
+  } finally {
+    try {
+      writer.releaseLock();
+    } catch {
+      // Some runtimes can still reject lock release during teardown.
+    }
+  }
+}
+
+function releaseWriterLock(writer: WritableStreamDefaultWriter<Uint8Array>): void {
+  try {
+    writer.releaseLock();
+  } catch {
+    // Some runtimes can still reject lock release during teardown.
+  }
 }
 
 async function expectCode(
@@ -172,78 +256,259 @@ function escapeDotStuffing(message: string): string {
   return message.replace(/(^|\r\n)\./g, '$1..');
 }
 
+function getSmtpAuthCredentials(config: SmtpConnectionConfig): { username: string; password: string } | null {
+  if (!config.password) {
+    return null;
+  }
+
+  return {
+    username: config.username ?? '',
+    password: config.password,
+  };
+}
+
 export function createSmtpTransport(
   config: SmtpConnectionConfig,
   hooks: SmtpTransportHooks = {},
 ): MailTransport {
   return {
     async send(message: OutgoingMail): Promise<TransportSendResult> {
-      const socket = await (hooks.connect ?? connectSocket)(config);
-      let activeSocket: net.Socket | tls.TLSSocket = socket;
-      let reader = createLineReader(activeSocket);
-      let greeted = false;
+      const cloudflareSockets = await loadCloudflareSocketsModule();
+      if (cloudflareSockets) {
+        return sendWithCloudflareTransport(config, message, cloudflareSockets);
+      }
 
+      return sendWithNodeTransport(config, message, hooks);
+    },
+  };
+}
+
+async function sendWithNodeTransport(
+  config: SmtpConnectionConfig,
+  message: OutgoingMail,
+  hooks: SmtpTransportHooks,
+): Promise<TransportSendResult> {
+  const socket = await (hooks.connect ?? connectSocket)(config);
+  let activeSocket: net.Socket | tls.TLSSocket = socket;
+  let reader = createLineReader(activeSocket);
+  let greeted = false;
+
+  try {
+    await readResponse(reader);
+    greeted = true;
+    await expectCode(reader, activeSocket, `EHLO ${config.tls?.servername ?? config.host ?? 'localhost'}`, [250]);
+
+    if (config.starttls && !config.secure) {
+      await expectCode(reader, activeSocket, 'STARTTLS', 220);
+      activeSocket = await (hooks.upgradeToTls ?? upgradeToTls)(socket as net.Socket, config);
+      reader = createLineReader(activeSocket);
+      await expectCode(reader, activeSocket, `EHLO ${config.tls?.servername ?? config.host ?? 'localhost'}`, [250]);
+    }
+
+    const authCredentials = getSmtpAuthCredentials(config);
+    if (authCredentials) {
+      await expectCode(reader, activeSocket, 'AUTH LOGIN', 334);
+      await expectCode(reader, activeSocket, Buffer.from(authCredentials.username).toString('base64'), 334);
+      await expectCode(reader, activeSocket, Buffer.from(authCredentials.password).toString('base64'), 235);
+    }
+
+    const envelopeFrom = message.from.match(/<([^>]+)>/)?.[1] ?? message.from;
+    await expectCode(reader, activeSocket, `MAIL FROM:<${envelopeFrom}>`, 250);
+    for (const recipient of message.to) {
+      const envelopeTo = recipient.match(/<([^>]+)>/)?.[1] ?? recipient;
+      await expectCode(reader, activeSocket, `RCPT TO:<${envelopeTo}>`, [250, 251]);
+    }
+
+    await expectCode(reader, activeSocket, 'DATA', 354);
+    const rawMessage = escapeDotStuffing(buildRawMessage(message));
+    activeSocket.write(`${rawMessage}\r\n.\r\n`);
+    const dataResponse = await readResponse(reader);
+    if (![250, 251].includes(dataResponse.code)) {
+      throw createFormMailerError('smtp_error', 'SMTP server rejected the message body.', {
+        response: dataResponse,
+      });
+    }
+
+    await expectCode(reader, activeSocket, 'QUIT', 221).catch(() => undefined);
+    activeSocket.end();
+
+    return {
+      messageId: hooks.messageIdFactory?.() ?? `<${randomUUID()}@form-mailer.local>`,
+    };
+  } catch (error) {
+    reader.close(
+      error instanceof Error ? error : new Error(typeof error === 'string' ? error : 'SMTP send failed.'),
+    );
+
+    try {
+      activeSocket.end();
+    } catch {
       try {
-        await readResponse(reader);
-        greeted = true;
-        await expectCode(reader, activeSocket, `EHLO ${config.tls?.servername ?? config.host ?? 'localhost'}`, [250]);
+        activeSocket.destroy();
+      } catch {
+        // Preserve the original SMTP failure if socket teardown is unhappy.
+      }
+    }
 
-        if (config.starttls && !config.secure) {
-          await expectCode(reader, activeSocket, 'STARTTLS', 220);
-          activeSocket = await (hooks.upgradeToTls ?? upgradeToTls)(socket as net.Socket, config);
-          reader = createLineReader(activeSocket);
-          await expectCode(reader, activeSocket, `EHLO ${config.tls?.servername ?? config.host ?? 'localhost'}`, [250]);
+    if (error instanceof Error && 'code' in error) {
+      throw error;
+    }
+    throw createFormMailerError('smtp_error', 'SMTP send failed.', {
+      cause: error instanceof Error ? error.message : String(error),
+    });
+  }
+}
+
+async function createCloudflareReader(socket: CloudflareSocket): Promise<SmtpLineReader> {
+  const reader = socket.readable.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let ended = false;
+
+  return {
+    async nextLine() {
+      while (true) {
+        const newlineIndex = buffer.indexOf('\n');
+        if (newlineIndex !== -1) {
+          const line = buffer.slice(0, newlineIndex).replace(/\r$/, '');
+          buffer = buffer.slice(newlineIndex + 1);
+          return line;
         }
 
-        if (config.username && config.password) {
-          await expectCode(reader, activeSocket, 'AUTH LOGIN', 334);
-          await expectCode(reader, activeSocket, Buffer.from(config.username).toString('base64'), 334);
-          await expectCode(reader, activeSocket, Buffer.from(config.password).toString('base64'), 235);
-        }
-
-        const envelopeFrom = message.from.match(/<([^>]+)>/)?.[1] ?? message.from;
-        await expectCode(reader, activeSocket, `MAIL FROM:<${envelopeFrom}>`, 250);
-        for (const recipient of message.to) {
-          const envelopeTo = recipient.match(/<([^>]+)>/)?.[1] ?? recipient;
-          await expectCode(reader, activeSocket, `RCPT TO:<${envelopeTo}>`, [250, 251]);
-        }
-
-        await expectCode(reader, activeSocket, 'DATA', 354);
-        const rawMessage = escapeDotStuffing(buildRawMessage(message));
-        activeSocket.write(`${rawMessage}\r\n.\r\n`);
-        const dataResponse = await readResponse(reader);
-        if (![250, 251].includes(dataResponse.code)) {
-          throw createFormMailerError('smtp_error', 'SMTP server rejected the message body.', {
-            response: dataResponse,
-          });
-        }
-
-        await expectCode(reader, activeSocket, 'QUIT', 221).catch(() => undefined);
-        activeSocket.end();
-
-        return {
-          messageId: hooks.messageIdFactory?.() ?? `<${randomUUID()}@form-mailer.local>`,
-        };
-      } catch (error) {
-        if (greeted) {
-          try {
-            await expectCode(reader, activeSocket, 'RSET', 250).catch(() => undefined);
-          } catch {
-            // Ignore cleanup failures.
+        if (ended) {
+          const line = buffer.replace(/\r$/, '');
+          buffer = '';
+          if (line) {
+            return line;
           }
+          throw createFormMailerError('smtp_error', 'SMTP connection closed.');
         }
-        try {
-          activeSocket.destroy();
-        } catch {
-          // Preserve the original SMTP failure if socket teardown is unhappy.
+
+        const chunk = await reader.read();
+        if (chunk.done) {
+          buffer += decoder.decode();
+          ended = true;
+          continue;
         }
-        if (error instanceof Error && 'code' in error) {
-          throw error;
-        }
-        throw createFormMailerError('smtp_error', 'SMTP send failed.', {
-          cause: error instanceof Error ? error.message : String(error),
-        });
+
+        buffer += decoder.decode(chunk.value, { stream: true });
+      }
+    },
+    close() {
+      ended = true;
+      try {
+        reader.releaseLock();
+      } catch {
+        // Preserve the SMTP failure that caused cleanup.
       }
     },
   };
+}
+
+async function sendWithCloudflareTransport(
+  config: SmtpConnectionConfig,
+  message: OutgoingMail,
+  sockets: CloudflareSocketsModule,
+): Promise<TransportSendResult> {
+  const host = config.host;
+  if (!host) {
+    throw createFormMailerError('config_error', 'SMTP host is required.');
+  }
+
+  const port = config.port ?? (config.secure ? 465 : 587);
+  const secureTransport = config.secure ? 'on' : config.starttls ? 'starttls' : 'off';
+  const socket = sockets.connect({ hostname: host, port }, { secureTransport, allowHalfOpen: true });
+  await socket.opened;
+
+  let activeSocket = socket;
+  let reader = await createCloudflareReader(activeSocket);
+  let writer = activeSocket.writable.getWriter();
+
+  try {
+    await readResponse(reader);
+    await expectCodeStream(reader, writer, `EHLO ${config.tls?.servername ?? host ?? 'localhost'}`, [250]);
+
+    if (config.starttls && !config.secure) {
+      await expectCodeStream(reader, writer, 'STARTTLS', 220);
+      releaseWriterLock(writer);
+      reader.close();
+      activeSocket = activeSocket.startTls();
+      await activeSocket.opened;
+      reader = await createCloudflareReader(activeSocket);
+      writer = activeSocket.writable.getWriter();
+      await expectCodeStream(reader, writer, `EHLO ${config.tls?.servername ?? host ?? 'localhost'}`, [250]);
+    }
+
+    const authCredentials = getSmtpAuthCredentials(config);
+    if (authCredentials) {
+      await expectCodeStream(reader, writer, 'AUTH LOGIN', 334);
+      await expectCodeStream(reader, writer, Buffer.from(authCredentials.username).toString('base64'), 334);
+      await expectCodeStream(reader, writer, Buffer.from(authCredentials.password).toString('base64'), 235);
+    }
+
+    const envelopeFrom = message.from.match(/<([^>]+)>/)?.[1] ?? message.from;
+    await expectCodeStream(reader, writer, `MAIL FROM:<${envelopeFrom}>`, 250);
+    for (const recipient of message.to) {
+      const envelopeTo = recipient.match(/<([^>]+)>/)?.[1] ?? recipient;
+      await expectCodeStream(reader, writer, `RCPT TO:<${envelopeTo}>`, [250, 251]);
+    }
+
+    await expectCodeStream(reader, writer, 'DATA', 354);
+    const rawMessage = escapeDotStuffing(buildRawMessage(message));
+    await writeStreamCommand(writer, `${rawMessage}\r\n.\r\n`);
+    const dataResponse = await readResponse(reader);
+    if (![250, 251].includes(dataResponse.code)) {
+      throw createFormMailerError('smtp_error', 'SMTP server rejected the message body.', {
+        response: dataResponse,
+      });
+    }
+
+    await expectCodeStream(reader, writer, 'QUIT', 221).catch(() => undefined);
+    await closeWriter(writer);
+    await activeSocket.close().catch(() => undefined);
+
+    return {
+      messageId: `<${randomUUID()}@form-mailer.local>`,
+    };
+  } catch (error) {
+    try {
+      await closeWriter(writer);
+    } catch {
+      // Preserve the original SMTP failure.
+    }
+
+    releaseWriterLock(writer);
+
+    try {
+      await activeSocket.close();
+    } catch {
+      // Preserve the original SMTP failure.
+    }
+
+    if (error instanceof Error && 'code' in error) {
+      throw error;
+    }
+
+    throw createFormMailerError('smtp_error', 'SMTP send failed.', {
+      cause: error instanceof Error ? error.message : String(error),
+    });
+  }
+}
+
+async function expectCodeStream(
+  reader: SmtpLineReader,
+  writer: WritableStreamDefaultWriter<Uint8Array>,
+  command: string,
+  expected: number | number[],
+): Promise<{ code: number; lines: string[] }> {
+  await writeStreamCommand(writer, command);
+  const response = await readResponse(reader);
+  const expectedCodes = Array.isArray(expected) ? expected : [expected];
+  if (!expectedCodes.includes(response.code)) {
+    throw createFormMailerError('smtp_error', `SMTP command failed: ${command.split(' ')[0]}`, {
+      command,
+      response,
+    });
+  }
+  return response;
 }
