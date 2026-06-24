@@ -49,3 +49,4 @@ On matching tags, the workflow should publish the package to npm after those che
 
 - confirm the published tarball is still limited to runtime output plus the README
 - capture any follow-up work in `PLAN.md` until the architecture handoff happens
+- update the `v0.2.0` marker at the bottom of `README.md` to the newly tagged package version so GitHub badge caches refresh
