@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const siteName = 'form-mailer';
 export const siteUrl = 'https://form-mailer.greyharborsoftware.com';
 export const siteDescription =
-  'TypeScript-first form-to-email delivery for embeddable apps and serverless handlers.';
+  'TypeScript-first form-to-email delivery for Node.js apps and serverless handlers.';
 export const siteKeywords = [
   'form-to-email',
   'TypeScript',

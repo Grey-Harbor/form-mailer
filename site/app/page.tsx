@@ -14,16 +14,16 @@ const packageBadgeSrc = 'https://badge.fury.io/js/@greyharbor%2Fform-mailer.svg'
 
 const cards = [
   {
+    title: 'Low footprint',
+    description: 'Keep the integration small and easy to carry into existing apps.',
+  },
+  {
     title: 'Validation first',
     description: 'Reject bad input before anything sends.',
   },
   {
-    title: 'Transport stays small',
-    description: 'Keep the send surface small and easy to swap.',
-  },
-  {
-    title: 'Docs stay close',
-    description: 'Stay focused on form delivery, not a full mail stack.',
+    title: 'Security-conscious',
+    description: 'Validate, allowlist, and sanitize before send.',
   },
 ] as const;
 
@@ -74,39 +74,40 @@ export default function HomePage() {
             <span className="eyebrow">Form-to-email delivery</span>
             <h1>form-mailer</h1>
             <p className="lede">
-              A compact, TypeScript-first package for turning form submissions into email.
+              A compact, TypeScript-first package for low-footprint form-to-email delivery in
+              Node.js apps and serverless handlers.
             </p>
 
             <div className="actions">
               <Link className="button primary" href="/docs/tutorial">
-                Read the tutorials
+                Start with the tutorial
               </Link>
-              <Link className="button secondary" href="/docs">
-                Browse the docs
+              <Link className="button secondary" href="/docs/reference/api">
+                See the API
               </Link>
             </div>
           </div>
 
           <aside className="hero-panel" aria-label="What form-mailer gives you">
             <div className="hero-panel-card">
+              <strong>Embedded, not hosted</strong>
+              <p>Built to fit inside an existing app.</p>
+            </div>
+            <div className="hero-panel-card">
+              <strong>Simple integration</strong>
+              <p>Keep validation and sending simple.</p>
+            </div>
+            <div className="hero-panel-card">
               <strong>Typed outcomes</strong>
               <p>Success and failure stay explicit.</p>
-            </div>
-            <div className="hero-panel-card">
-              <strong>Security-conscious defaults</strong>
-              <p>Validate, allowlist, and sanitize first.</p>
-            </div>
-            <div className="hero-panel-card">
-              <strong>Deployment-friendly</strong>
-              <p>Works well in Node, serverless, and examples.</p>
             </div>
           </aside>
         </section>
 
         <section className="section" aria-labelledby="why-heading">
           <div className="section-heading">
-            <p className="eyebrow">Why it stays small</p>
-            <h2 id="why-heading">One job, kept sharp</h2>
+            <p className="eyebrow">Focused by design</p>
+            <h2 id="why-heading">One job, kept simple</h2>
             <p>Form-mailer handles form email and stays out of the rest of your stack.</p>
           </div>
 
@@ -120,11 +121,23 @@ export default function HomePage() {
           </div>
         </section>
 
+        <section className="section" aria-labelledby="exist-heading">
+          <div className="section-heading">
+            <p className="eyebrow">Why it exists</p>
+            <h2 id="exist-heading">A utility, not a mail platform</h2>
+            <p>
+              Most apps do not need a mail platform. They need a small delivery utility that
+              lives inside the deployment, validates input first, and hands the message to
+              a transport without adding platform overhead.
+            </p>
+          </div>
+        </section>
+
         <section className="section" aria-labelledby="docs-heading">
           <div className="section-heading">
-            <p className="eyebrow">Choose your path</p>
-            <h2 id="docs-heading">Choose the path that fits</h2>
-            <p>Use the Diátaxis path that matches what you need now.</p>
+            <p className="eyebrow">Guides & References</p>
+            <h2 id="docs-heading">Choose your path</h2>
+            <p>Whether you’re integrating quickly or exploring, the documentation is structured to help.</p>
           </div>
 
           <div className="path-grid">
