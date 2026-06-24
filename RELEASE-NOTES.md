@@ -1,3 +1,42 @@
+# @greyharbor/form-mailer 0.2.0
+
+Release tag: `v0.2.0`
+
+This release adds built-in HTTP transport mapping hooks so provider-specific REST APIs can shape request and response payloads without replacing the package transport layer. The generic HTTP transport still works out of the box, but callers can now map `OutgoingMail` into a custom JSON contract and parse provider success responses in code.
+
+## GitHub Release Blurb
+
+`@greyharbor/form-mailer` 0.2.0 adds first-class HTTP transport customization for REST-based mail providers.
+
+It keeps the existing SMTP and generic HTTP paths intact while adding request mapping and response parsing hooks for built-in HTTP delivery. The release also updates the configuration docs, HTTP examples, and test coverage so consumers can integrate provider-specific APIs without writing a custom transport from scratch.
+
+## Highlights
+
+- built-in HTTP transport mapping hooks for provider-specific REST contracts
+- code-level request shaping with `mapRequest`
+- code-level response parsing with `parseResponse`
+- preserved generic JSON `POST` behavior when no hooks are supplied
+- updated HTTP, configuration, adapter, and tutorial docs
+- new example coverage for mapped HTTP delivery
+- expanded test coverage for mapped requests, custom success parsing, and failure handling
+
+## Packaging
+
+- published package name: `@greyharbor/form-mailer`
+- npm version: `0.2.0`
+- public package surface is limited to the built runtime output plus `README.md`
+
+## Release Notes
+
+- GitHub Actions publishes on tag pushes that match `v*`
+- npm publish uses the `NPM_TOKEN` repository secret as `NODE_AUTH_TOKEN`
+- the release guide lives in [`docs/how-to/releasing.md`](./docs/how-to/releasing.md)
+
+## Compatibility
+
+- Node.js 20 or newer remains the supported runtime for the package publish target
+- existing SMTP and generic HTTP consumers remain supported without code changes
+
 # @greyharbor/form-mailer 0.1.6
 
 Release tag: `v0.1.6`
