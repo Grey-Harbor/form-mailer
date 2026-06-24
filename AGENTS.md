@@ -34,7 +34,7 @@
 - When a doc includes TypeScript usage examples for a package feature that JavaScript consumers would use directly, add a JavaScript companion example unless the page is intentionally type-contract-only.
 - Keep the documentation tone concise and detailed without sounding robotic; it should feel like Grey Harbor writing: calm, practical, independent, and technically confident without marketing fluff.
 - Keep the root `README.md` as a landing page, not a long-form guide.
-- Keep the small version marker at the bottom of `README.md` current after each tagged release so GitHub badge caches refresh.
+- Keep the npm badge cache-buster inline in the `README.md` badge URL and current after each tagged release so GitHub badge caches refresh.
 - When writing PR bodies, release notes, or other Markdown handoff files, always use real line breaks instead of literal `\n` escape sequences.
 - After editing a Markdown handoff file, re-open it and verify the formatting before sharing or publishing it.
 

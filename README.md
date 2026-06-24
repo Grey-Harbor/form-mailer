@@ -1,7 +1,7 @@
 ![form-mailer](https://form-mailer.greyharborsoftware.com/brand/social-card.png)
 
 [![CI](https://github.com/Grey-Harbor/form-mailer/actions/workflows/ci.yml/badge.svg)](https://github.com/Grey-Harbor/form-mailer/actions/workflows/ci.yml)
-[![npm version](https://badge.fury.io/js/@greyharbor%2Fform-mailer.svg)](https://badge.fury.io/js/@greyharbor%2Fform-mailer)
+[![npm version](https://badge.fury.io/js/@greyharbor%2Fform-mailer.svg?v=0.2.0)](https://badge.fury.io/js/@greyharbor%2Fform-mailer)
 
 # form-mailer
 
@@ -85,5 +85,3 @@ It is not intended to become:
 - Planning lives in [`PLAN.md`](./PLAN.md)
 - The committed design lives in [`ARCHITECTURE.md`](./ARCHITECTURE.md)
 - End-user documentation lives in [`./docs`](./docs)
-
-v0.2.0
