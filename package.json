@@ -1,6 +1,6 @@
 {
   "name": "@greyharbor/form-mailer",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "type": "module",
   "description": "Lightweight form-to-email delivery for embeddable apps and serverless handlers.",
   "repository": {
