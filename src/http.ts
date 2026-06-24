@@ -1,5 +1,5 @@
 import { createFormMailerError } from './errors.js';
-import type { HttpTransportConfig, MailTransport, OutgoingMail, TransportSendResult } from './types.js';
+import type { HttpTransportConfig, HttpTransportRequest, MailTransport, OutgoingMail, TransportSendResult } from './types.js';
 
 function ensureValidUrl(value: string): string {
   try {
@@ -25,6 +25,45 @@ function buildHeaders(config: HttpTransportConfig): Headers {
   }
 
   return headers;
+}
+
+function buildRequestInit(
+  baseUrl: string,
+  config: HttpTransportConfig,
+  message: OutgoingMail,
+): { url: string; init: RequestInit } {
+  const mappedRequest = config.mapRequest?.(message);
+
+  if (mappedRequest !== undefined && (!mappedRequest || typeof mappedRequest !== 'object' || Array.isArray(mappedRequest))) {
+    throw createFormMailerError('transport_error', 'HTTP transport request mapper must return an object.');
+  }
+
+  const request = mappedRequest as HttpTransportRequest | undefined;
+  const url = request?.url ? ensureValidMappedUrl(request.url) : baseUrl;
+  const headers = buildHeaders(config);
+
+  if (request?.headers) {
+    for (const [name, value] of new Headers(request.headers).entries()) {
+      headers.set(name, value);
+    }
+  }
+
+  return {
+    url,
+    init: {
+      method: request?.method ?? 'POST',
+      headers,
+      body: request?.body ?? JSON.stringify(message),
+    },
+  };
+}
+
+function ensureValidMappedUrl(value: string): string {
+  try {
+    return new URL(value).toString();
+  } catch {
+    throw createFormMailerError('transport_error', 'HTTP transport request mapper returned an invalid absolute URL.');
+  }
 }
 
 async function readSafeErrorBody(response: Response): Promise<unknown> {
@@ -62,11 +101,8 @@ export function createHttpTransport(config: HttpTransportConfig): MailTransport 
 
   return {
     async send(message: OutgoingMail): Promise<TransportSendResult> {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: buildHeaders(config),
-        body: JSON.stringify(message),
-      });
+      const request = buildRequestInit(url, config, message);
+      const response = await fetch(request.url, request.init);
 
       if (!response.ok) {
         const body = await readSafeErrorBody(response);
@@ -75,6 +111,10 @@ export function createHttpTransport(config: HttpTransportConfig): MailTransport 
           statusText: response.statusText,
           ...(body !== undefined ? { body } : {}),
         });
+      }
+
+      if (config.parseResponse) {
+        return await config.parseResponse(response);
       }
 
       const messageId = await readMessageId(response);

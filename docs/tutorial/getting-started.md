@@ -50,6 +50,8 @@ const mailer = createFormMailer({
 });
 ```
 
+If your HTTP provider expects a different request or response contract, keep the built-in transport and add code-level `mapRequest` or `parseResponse` hooks. For the exact hook shapes, see [Reference: API](../reference/api.md).
+
 If your provider issues a token instead of a password, use `FORM_MAILER_SMTP_TOKEN` for the secret value.
 
 HTTP example:

@@ -33,10 +33,23 @@ export interface SmtpConnectionConfig {
   };
 }
 
+export type HttpTransportHeaders = Headers | Record<string, string> | Array<[string, string]>;
+
+export type HttpTransportBody = string | Uint8Array | ArrayBuffer;
+
+export interface HttpTransportRequest {
+  url?: string | undefined;
+  method?: string | undefined;
+  headers?: HttpTransportHeaders | undefined;
+  body?: HttpTransportBody | undefined;
+}
+
 export interface HttpTransportConfig {
   url: string;
   token?: string | undefined;
   headers?: Record<string, string> | undefined;
+  mapRequest?: ((message: OutgoingMail) => HttpTransportRequest) | undefined;
+  parseResponse?: ((response: Response) => Promise<TransportSendResult> | TransportSendResult) | undefined;
 }
 
 export interface FormMailerConfig {

@@ -43,14 +43,27 @@ The `config` object uses `HttpTransportConfig`, which supports:
 - `url`
 - `token`
 - `headers`
+- `mapRequest`
+- `parseResponse`
+
+`mapRequest` returns an `HttpTransportRequest`, which supports:
+
+- `url`
+- `method`
+- `headers`
+- `body`
 
 Important behavior:
 
 - `url` must be a valid absolute URL
-- requests always use `POST`
-- the request body is JSON serialized from `OutgoingMail`
-- `content-type` is always kept compatible with JSON delivery
+- requests use `POST` by default
+- when `mapRequest` is omitted, the request body is JSON serialized from `OutgoingMail`
+- the built-in defaults include `content-type: application/json`
 - `authorization: Bearer <token>` is added when `token` is present
+- `mapRequest(message)` can override the request URL, method, headers, and body
+- mapped headers override the built-in defaults when they use the same header names
+- `parseResponse(response)` can return a provider-specific `TransportSendResult`
+- when `parseResponse` is omitted, the transport looks for a string `messageId` in a JSON response body
 
 For transport-level expectations, see [Reference: Adapters](./adapters.md).
 
@@ -162,6 +175,7 @@ Details worth calling out:
 - `replyTo` can be a string or a function that receives the submission
 - `transport` is optional when `http` or `smtp` is provided
 - `http` is optional when `transport` is provided
+- `http.mapRequest` and `http.parseResponse` are code-only hooks and are not loaded from environment variables
 - `honeypotFieldName` defaults to `website` when omitted
 - `requiredFields` defaults to an empty list
 - `maxPayloadBytes` defaults to `64 * 1024`

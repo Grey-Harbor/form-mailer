@@ -107,3 +107,4 @@ The code API supports a few configuration patterns that do not map directly to e
 - `subject` can be a string or a function that receives the submission
 - `replyTo` can be a string or a function that receives the submission
 - `from` can be passed as either a plain email string or a `{ name, email }` address object
+- `http.mapRequest` and `http.parseResponse` can shape provider-specific HTTP contracts in code while keeping env loading static

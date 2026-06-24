@@ -80,7 +80,9 @@ Recommended behavior:
 
 `createHttpTransport()` is the built-in adapter for HTTP API delivery.
 
-Use it when a provider expects a JSON `POST` request instead of an SMTP session.
+Use it when a provider expects an HTTP request instead of an SMTP session.
+
+By default it sends `OutgoingMail` as a JSON `POST`, but it also supports code-level request and response mapping for providers with their own REST contract shapes.
 
 `createSmtpTransport()` is the built-in adapter for SMTP delivery.
 

@@ -14,6 +14,7 @@ export type {
   FormMailerErrorCode,
   FormMailSubmission,
   HttpTransportConfig,
+  HttpTransportRequest,
   MailAddress,
   MailTransport,
   OutgoingMail,
