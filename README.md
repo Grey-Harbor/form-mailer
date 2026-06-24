@@ -9,6 +9,16 @@
 
 It gives your product a calm, reliable email layer that stays easy to understand, easy to embed, and easy to teach from in standard Node.js applications as well as serverless handlers.
 
+If you'd like to explore the project site, [Click Here](https://form-mailer.greyharborsoftware.com) for the latest overview and supporting pages.
+
+## Start Here
+
+- [Documentation home](./docs/README.md)
+- [Tutorials](./docs/tutorial/README.md)
+- [How-to Guides](./docs/how-to/README.md)
+- [Reference](./docs/reference/README.md)
+- [Explanation](./docs/explanation/README.md)
+
 ## Why it exists
 
 Most apps do not need a mail system.
@@ -70,16 +80,10 @@ It is not intended to become:
 - a full mail server
 - an SMTP relay product
 
-## Start here
-
-- [Documentation home](./docs/README.md)
-- [Tutorials](./docs/tutorial/README.md)
-- [How-to Guides](./docs/how-to/README.md)
-- [Reference](./docs/reference/README.md)
-- [Explanation](./docs/explanation/README.md)
-
 ## Project notes
 
 - Planning lives in [`PLAN.md`](./PLAN.md)
 - The committed design lives in [`ARCHITECTURE.md`](./ARCHITECTURE.md)
 - End-user documentation lives in [`./docs`](./docs)
+
+v0.2.0
