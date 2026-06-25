@@ -1,4 +1,5 @@
 import { createFormMailerError } from './errors.js';
+import { stringifyForTransport } from './serialize.js';
 import type {
   FormMailerConfig,
   FormMailerError,
@@ -57,7 +58,7 @@ function byteLength(value: string): number {
 }
 
 function serializeForLimitCheck(submission: FormMailSubmission): string {
-  return JSON.stringify(submission);
+  return stringifyForTransport(submission);
 }
 
 function getSubmissionFieldValue(submission: FormMailSubmission, field: string): unknown {

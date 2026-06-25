@@ -250,6 +250,13 @@ function buildConfigFromEnv(env: NodeJS.ProcessEnv): FormMailerConfig {
     );
   }
 
+  if (!httpUrl && !smtpHost) {
+    throw createFormMailerError(
+      'config_error',
+      'Either FORM_MAILER_HTTP_URL or FORM_MAILER_SMTP_HOST must be set.',
+    );
+  }
+
   return {
     from: resolveFromAddress({
       email: rawFrom ?? '',
@@ -265,17 +272,22 @@ function buildConfigFromEnv(env: NodeJS.ProcessEnv): FormMailerConfig {
           },
         }
       : {}),
-    smtp: {
-      host: smtpHost,
-      port: parseNumber(env.FORM_MAILER_SMTP_PORT),
-      secure: env.FORM_MAILER_SMTP_SECURE === 'true',
-      starttls: env.FORM_MAILER_SMTP_STARTTLS === 'true',
-      username: env.FORM_MAILER_SMTP_USERNAME,
-      password: env.FORM_MAILER_SMTP_TOKEN ?? env.FORM_MAILER_SMTP_PASSWORD,
-      tls: {
-        servername: env.FORM_MAILER_SMTP_SERVERNAME,
-      },
-    },
+    ...(smtpHost
+      ? {
+          smtp: {
+            host: smtpHost,
+            port: parseNumber(env.FORM_MAILER_SMTP_PORT),
+            secure: env.FORM_MAILER_SMTP_SECURE === 'true',
+            starttls: env.FORM_MAILER_SMTP_STARTTLS === 'true',
+            username: env.FORM_MAILER_SMTP_USERNAME,
+            password: env.FORM_MAILER_SMTP_PASSWORD,
+            token: env.FORM_MAILER_SMTP_TOKEN,
+            tls: {
+              servername: env.FORM_MAILER_SMTP_SERVERNAME,
+            },
+          },
+        }
+      : {}),
     recipientMap,
     subject: env.FORM_MAILER_SUBJECT,
     replyTo: env.FORM_MAILER_REPLY_TO,
@@ -312,6 +324,13 @@ export async function loadConfigFromEnv(env: NodeJS.ProcessEnv = process.env): P
 export function createTransportFromConfig(config: FormMailerConfig) {
   if (config.transport) {
     return config.transport;
+  }
+
+  if (config.http && config.smtp) {
+    throw createFormMailerError(
+      'config_error',
+      'HTTP and SMTP configuration cannot both be provided. Choose one built-in transport.',
+    );
   }
 
   if (config.http) {

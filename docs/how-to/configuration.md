@@ -61,8 +61,12 @@ Legacy sender aliases are still accepted:
 - `FORM_MAILER_SENDER_NAME` can supply the sender display name
 
 If you're using a local SMTP relay or a development server that does not require auth, you can omit the username and secret values.
+If you supply an SMTP password or token without a username, the SMTP transport still authenticates and sends an empty username value.
+In code-first config, `smtp.token` is the token field; in env config, use `FORM_MAILER_SMTP_TOKEN`.
+If both `smtp.password` and `smtp.token` are present in code-first config, `smtp.token` wins.
 
 If `FORM_MAILER_HTTP_URL` and `FORM_MAILER_SMTP_HOST` are both set, `form-mailer` rejects the config instead of guessing which built-in transport you meant.
+If neither `FORM_MAILER_HTTP_URL` nor `FORM_MAILER_SMTP_HOST` is set, env loading also rejects the config instead of creating a half-configured mailer.
 
 For minimal built-in examples, see [Tutorial: Getting Started](../tutorial/getting-started.md).
 
@@ -74,7 +78,7 @@ Use it when different form destinations should go to different inboxes:
 
 - a submission with `recipientKey: "support"` uses the mapped support recipients
 - a submission with no `recipientKey` uses `to`
-- if a `recipientKey` does not match any map entry, `to` is used as the fallback
+- if a `recipientKey` does not match any map entry, the send fails with `config_error`
 
 If you rely on `recipientMap` alone, make sure every routed submission supplies a matching `recipientKey`.
 

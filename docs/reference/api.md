@@ -85,6 +85,7 @@ The `config` object uses `SmtpConnectionConfig`, which supports:
 - `starttls`
 - `username`
 - `password`
+- `token`
 - `tls`
 
 Important behavior:
@@ -93,7 +94,9 @@ Important behavior:
 - `port` defaults to `465` when `secure` is true
 - `port` defaults to `587` otherwise
 - `starttls` upgrades a non-implicit TLS connection after `EHLO`
-- authentication runs only when both `username` and `password` are present
+- authentication runs whenever `password` or `token` is present
+- when both are provided, `token` is used as the SMTP secret value
+- when `username` is omitted but an SMTP secret is present, SMTP auth sends an empty username value
 
 For transport-level expectations, see [Reference: Adapters](./adapters.md).
 
@@ -142,6 +145,7 @@ Use it when you need to narrow an unknown error before reading:
 - `message`
 - `recipientKey`
 - `origin`
+- `honeypot`
 - `fields`
 
 Details worth calling out:
@@ -150,6 +154,7 @@ Details worth calling out:
 - the honeypot is resolved by the configured `honeypotFieldName`
 - that field name can point at a top-level submission property or a value inside `submission.fields`
 - a property literally named `honeypot` is only meaningful if you configure `honeypotFieldName: 'honeypot'`
+- `submission.fields` can contain nested JSON-like objects and arrays in addition to scalar values
 
 ## Configuration shape
 
@@ -176,6 +181,7 @@ Details worth calling out:
 - `transport` is optional when `http` or `smtp` is provided
 - `http` is optional when `transport` is provided
 - `http.mapRequest` and `http.parseResponse` are code-only hooks and are not loaded from environment variables
+- when no explicit `transport` is provided, `http` and `smtp` are mutually exclusive
 - `honeypotFieldName` defaults to `website` when omitted
 - `requiredFields` defaults to an empty list
 - `maxPayloadBytes` defaults to `64 * 1024`
@@ -224,6 +230,7 @@ Notes worth calling out:
 - `originAllowlist` expects full origins such as `https://example.com`
 - origin comparison is done against the normalized `new URL(submission.origin).origin` value
 - `maxPayloadBytes` is measured against the JSON-serialized submission body
+- payload serialization is cycle-safe, so circular field objects are rendered with `"[Circular]"` instead of throwing
 
 ## Environment loading
 
@@ -248,12 +255,14 @@ The env loader reads these HTTP values:
 - `FORM_MAILER_HTTP_HEADERS` supplies optional JSON headers with string values
 
 If both `FORM_MAILER_HTTP_URL` and `FORM_MAILER_SMTP_HOST` are set, `loadConfigFromEnv()` rejects with `config_error` instead of guessing which built-in transport to use.
+If neither `FORM_MAILER_HTTP_URL` nor `FORM_MAILER_SMTP_HOST` is set, `loadConfigFromEnv()` also rejects with `config_error`.
 
 ## Recipient mapping
 
 `recipientMap` is an optional routing table keyed by `FormMailSubmission.recipientKey`.
 
 - if the submission sets `recipientKey` and the key exists in `recipientMap`, the mapped recipients are used
+- if the submission sets `recipientKey` and the key does not exist in `recipientMap`, the send fails with `config_error`
 - otherwise the package falls back to `to`
 - `to` is still the default recipient list for submissions that do not set a route key
 
