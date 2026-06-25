@@ -52,7 +52,20 @@ const mailer = createFormMailer({
 
 If your HTTP provider expects a different request or response contract, keep the built-in transport and add code-level `mapRequest` or `parseResponse` hooks. For the exact hook shapes, see [Reference: API](../reference/api.md).
 
-If your provider issues a token instead of a password, use `FORM_MAILER_SMTP_TOKEN` for the secret value.
+If your provider issues a token instead of a password, use `token` in code or `FORM_MAILER_SMTP_TOKEN` in env config:
+
+```ts
+const mailer = createFormMailer({
+  from: 'no-reply@example.com',
+  to: ['support@example.com'],
+  smtp: {
+    host: process.env.FORM_MAILER_SMTP_HOST,
+    username: process.env.FORM_MAILER_SMTP_USERNAME,
+    token: process.env.FORM_MAILER_SMTP_TOKEN,
+    starttls: true,
+  },
+});
+```
 
 HTTP example:
 

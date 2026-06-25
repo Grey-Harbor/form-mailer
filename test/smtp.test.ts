@@ -150,7 +150,7 @@ test('authenticates with token-only credentials', async () => {
     {
       host: 'mail.example.com',
       starttls: true,
-      password: 'token-only-secret',
+      token: 'token-only-secret',
       tls: {
         servername: 'mail.example.com',
       },

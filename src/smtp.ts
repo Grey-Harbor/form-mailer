@@ -257,13 +257,14 @@ function escapeDotStuffing(message: string): string {
 }
 
 function getSmtpAuthCredentials(config: SmtpConnectionConfig): { username: string; password: string } | null {
-  if (!config.password) {
+  const secret = config.token ?? config.password;
+  if (!secret) {
     return null;
   }
 
   return {
     username: config.username ?? '',
-    password: config.password,
+    password: secret,
   };
 }
 
