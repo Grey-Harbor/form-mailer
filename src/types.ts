@@ -1,6 +1,8 @@
+import type { SerializableValue } from './serialize.js';
+
 export type SubmissionPrimitive = string | number | boolean | null | undefined;
 
-export type SubmissionValue = SubmissionPrimitive | SubmissionPrimitive[];
+export type SubmissionValue = SerializableValue;
 
 export type SubmissionFields = Record<string, SubmissionValue>;
 
@@ -27,6 +29,7 @@ export interface SmtpConnectionConfig {
   starttls?: boolean | undefined;
   username?: string | undefined;
   password?: string | undefined;
+  token?: string | undefined;
   tls?: {
     rejectUnauthorized?: boolean | undefined;
     servername?: string | undefined;

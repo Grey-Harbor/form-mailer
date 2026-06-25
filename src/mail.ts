@@ -1,4 +1,5 @@
 import type { FormMailSubmission, OutgoingMail, ResolvedFormMailerConfig } from './types.js';
+import { stringifyForTransport } from './serialize.js';
 import { formatAddress, resolveRecipients, resolveReplyTo, resolveSubject, sanitizeHeaderValue } from './validation.js';
 
 function createRandomIdentifier(): string {
@@ -33,7 +34,7 @@ function formatValue(value: unknown): string {
   }
 
   if (typeof value === 'object') {
-    return JSON.stringify(value, null, 2);
+    return stringifyForTransport(value, 2);
   }
 
   return String(value);

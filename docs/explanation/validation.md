@@ -196,6 +196,9 @@ That includes any combination of:
 - `submission.fields`
 - any extra nested values that end up in the serialized payload
 
+The serialization path is cycle-safe.
+If a JavaScript caller includes circular object references in `submission.fields`, the package renders those loops as `"[Circular]"` instead of throwing during validation or message assembly.
+
 The default limit is `64 * 1024` bytes.
 
 If the payload is too large, validation fails with:

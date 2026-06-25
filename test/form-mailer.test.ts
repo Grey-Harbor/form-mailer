@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import { strict as assert } from 'node:assert';
 import { createFormMailer } from '../src/index.js';
-import type { MailTransport, OutgoingMail } from '../src/types.js';
+import type { MailTransport, OutgoingMail, SubmissionValue } from '../src/types.js';
 
 function createMockTransport(handler: (message: OutgoingMail) => Promise<{ messageId?: string }> | { messageId?: string }): MailTransport {
   return {
@@ -88,4 +88,35 @@ test('routes submissions through recipientMap when recipientKey is set', async (
 
   assert.equal(result.ok, true);
   assert.deepEqual(captured?.to, ['sales@example.com', 'ops@example.com']);
+});
+
+test('serializes nested and circular field values without rejecting send()', async () => {
+  let captured: OutgoingMail | undefined;
+  const mailer = createFormMailer({
+    from: 'sender@example.com',
+    to: ['recipient@example.com'],
+    transport: createMockTransport(async (message) => {
+      captured = message;
+      return { messageId: 'nested-123' };
+    }),
+  });
+
+  const nested: { [key: string]: SubmissionValue } = {
+    topic: 'support',
+    details: {
+      priority: 'high',
+    },
+  };
+  nested.self = nested;
+
+  const result = await mailer.send({
+    email: 'visitor@example.com',
+    fields: {
+      metadata: nested,
+    },
+  });
+
+  assert.equal(result.ok, true);
+  assert.match(captured?.text ?? '', /"\[Circular\]"/);
+  assert.match(captured?.html ?? '', /&quot;\[Circular\]&quot;/);
 });
