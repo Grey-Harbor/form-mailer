@@ -171,6 +171,54 @@ test('authenticates with token-only credentials', async () => {
   assert.ok(secure.writes.some((entry) => entry.startsWith(Buffer.from('token-only-secret').toString('base64'))));
 });
 
+test('prefers token over password when both SMTP secrets are provided', async () => {
+  const plain = new ScriptedSocket([
+    ['220 mail.example.com ESMTP ready'],
+    ['250 mail.example.com greets you'],
+    ['220 Ready to start TLS'],
+  ]);
+  const secure = new ScriptedSocket([
+    ['250 mail.example.com greets you again'],
+    ['334 VXNlcm5hbWU6'],
+    ['334 UGFzc3dvcmQ6'],
+    ['235 Authentication successful'],
+    ['250 2.1.0 Ok'],
+    ['250 2.1.5 Ok'],
+    ['354 End data with <CR><LF>.<CR><LF>'],
+    ['250 2.0.0 Message accepted'],
+    ['221 2.0.0 Bye'],
+  ]);
+
+  const transport = makeTransport(
+    {
+      host: 'mail.example.com',
+      starttls: true,
+      username: 'user@example.com',
+      password: 'password-secret',
+      token: 'token-secret',
+      tls: {
+        servername: 'mail.example.com',
+      },
+    },
+    { connect: plain, upgrade: secure },
+  );
+
+  const result = await transport.send({
+    from: 'sender@example.com',
+    to: ['recipient@example.com'],
+    subject: 'Hello',
+    text: 'Line 1',
+  });
+
+  assert.equal(result.messageId, '<fixed-message-id@example.com>');
+  assert.ok(
+    secure.writes.some((entry) => entry.startsWith(Buffer.from('token-secret').toString('base64'))),
+  );
+  assert.ok(
+    !secure.writes.some((entry) => entry.startsWith(Buffer.from('password-secret').toString('base64'))),
+  );
+});
+
 test('cleans up after an SMTP rejection', async () => {
   const socket = new ScriptedSocket([
     ['220 mail.example.com ESMTP ready'],

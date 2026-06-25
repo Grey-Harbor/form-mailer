@@ -67,6 +67,8 @@ const mailer = createFormMailer({
 });
 ```
 
+If both `password` and `token` are present in code-first SMTP config, `token` is used as the secret.
+
 HTTP example:
 
 TypeScript example:
