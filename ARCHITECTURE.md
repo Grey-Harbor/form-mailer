@@ -69,6 +69,7 @@ The implementation is organized into small modules:
 The package root exports the supported entrypoints only:
 
 - `createFormMailer`
+- `createHttpTransport`
 - `createSmtpTransport`
 - `loadConfigFromEnv`
 - `createFormMailerError`
@@ -89,9 +90,13 @@ The main runtime object returned by `createFormMailer(config)` exposes:
 
 If the caller supplied a custom transport, that transport is used directly.
 
+If the caller supplied HTTP config, the package creates an HTTP transport.
+
 If the caller supplied SMTP config, the package creates an SMTP transport.
 
-If neither transport nor SMTP config is available, the package fails with a `config_error`.
+If the caller supplies both built-in transport configs without an explicit custom transport, the package fails with a `config_error` instead of guessing.
+
+If neither transport nor built-in HTTP/SMTP config is available, the package fails with a `config_error`.
 
 ### 2. Validate the submission
 
@@ -172,7 +177,8 @@ The parser is limited to the simple `KEY=VALUE` shapes needed by the package con
 
 - `to` is the default recipient list
 - a matching `recipientKey` routes to the mapped recipients
-- if the key is missing or unmapped, the package falls back to `to`
+- if the key is missing, the package falls back to `to`
+- if the key is present but unmapped, the package fails with `config_error`
 
 That keeps the default path simple while still allowing named destinations when a form needs them.
 
@@ -207,7 +213,7 @@ Supported transport behavior includes:
 - plain TCP connections
 - implicit TLS
 - STARTTLS upgrade flow
-- username/password authentication
+- password-based SMTP authentication, including token-style secrets
 - dot-stuffing for message bodies
 
 Transport failures are surfaced as `smtp_error` or `transport_error` depending on where the failure occurs.

@@ -53,7 +53,8 @@ test('loads defaults from FORM_MAILER_ENV_PATH and lets process env win', { conc
   assert.deepEqual(config.to, ['file-recipient@example.com']);
   assert.equal(config.smtp?.host, 'smtp.file.example.com');
   assert.equal(config.smtp?.username, 'file-user');
-  assert.equal(config.smtp?.password, 'file-secret');
+  assert.equal(config.smtp?.password, undefined);
+  assert.equal(config.smtp?.token, 'file-secret');
   assert.equal(config.subject, 'from runtime');
   assert.deepEqual(config.recipientMap, { support: ['support@example.com'] });
 });
@@ -259,6 +260,17 @@ test('rejects config when HTTP and SMTP transports are both configured in env', 
   );
 });
 
+test('rejects config when no built-in transport is configured in env', async () => {
+  await assert.rejects(
+    () =>
+      loadConfigFromEnv({
+        FORM_MAILER_FROM: 'sender@example.com',
+        FORM_MAILER_TO: 'recipient@example.com',
+      }),
+    (error: unknown) => isFormMailerError(error) && error.code === 'config_error',
+  );
+});
+
 test('createTransportFromConfig prefers an explicit transport over built-in HTTP or SMTP config', async () => {
   const transport = {
     async send() {
@@ -276,34 +288,14 @@ test('createTransportFromConfig prefers an explicit transport over built-in HTTP
   assert.equal(resolved, transport);
 });
 
-test('createTransportFromConfig prefers built-in HTTP over SMTP config', async () => {
-  const originalFetch = globalThis.fetch;
-  let requestedUrl = '';
-  globalThis.fetch = (async (input: string | URL | Request) => {
-    requestedUrl = String(input);
-    return new Response(JSON.stringify({ messageId: 'http-id' }), {
-      status: 200,
-      headers: { 'content-type': 'application/json' },
-    });
-  }) as typeof fetch;
-
-  try {
-    const transport = createTransportFromConfig({
-      from: 'sender@example.com',
-      http: { url: 'https://api.example.com/send' },
-      smtp: { host: 'smtp.example.com' },
-    });
-
-    const result = await transport.send({
-      from: 'sender@example.com',
-      to: ['recipient@example.com'],
-      subject: 'Hello',
-      text: 'Body',
-    });
-
-    assert.equal(requestedUrl, 'https://api.example.com/send');
-    assert.equal(result.messageId, 'http-id');
-  } finally {
-    globalThis.fetch = originalFetch;
-  }
+test('createTransportFromConfig rejects when built-in HTTP and SMTP config are both provided', async () => {
+  assert.throws(
+    () =>
+      createTransportFromConfig({
+        from: 'sender@example.com',
+        http: { url: 'https://api.example.com/send' },
+        smtp: { host: 'smtp.example.com' },
+      }),
+    (error: unknown) => isFormMailerError(error) && error.code === 'config_error',
+  );
 });
