@@ -121,6 +121,9 @@ PR expectations:
 - note the checks you ran
 - include any important assumptions or follow-up work
 
+GitHub preloads the repository PR template from [`.github/pull_request_template.md`](../../.github/pull_request_template.md).
+Use it to summarize the change, record the checks you ran, and confirm whether docs were updated or intentionally left unchanged.
+
 ## Documentation-specific expectations
 
 If the change affects behavior, defaults, or public usage, keep the project docs aligned:
