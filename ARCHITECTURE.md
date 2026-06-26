@@ -227,7 +227,7 @@ The npm package is intentionally lean.
 The publish surface currently includes:
 
 - runtime output
-- the root `README.md`
+- the packaged `README.md`, generated from `package-readme.md` during pack/publish
 
 It excludes:
 

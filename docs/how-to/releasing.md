@@ -7,6 +7,7 @@ This guide walks through the tag-driven release flow for the package.
 - run `npm test`
 - run `npm run pack:check`
 - confirm `README.md` still reads like a landing page
+- confirm `package-readme.md` still reflects the npm-facing package summary
 - confirm the root export surface is still intentional
 - confirm the git tag will follow the `v*` semver pattern used by CI
 
@@ -45,8 +46,11 @@ For both branch and tag runs, CI should:
 
 On matching tags, the workflow should publish the package to npm after those checks succeed.
 
+During `npm pack` and `npm publish`, the package swaps the repo landing-page `README.md` with `package-readme.md` for the tarball, then restores the repo copy afterward.
+
 ## Post-release
 
 - confirm the published tarball is still limited to runtime output plus the README
+- confirm the published README matches the condensed release-focused content from `package-readme.md`
 - capture any follow-up work in `PLAN.md` until the architecture handoff happens
 - keep the npm badge cache-buster inline in the `README.md` badge URL and update it to the newly tagged package version so GitHub badge caches refresh
