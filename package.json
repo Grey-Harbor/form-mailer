@@ -26,6 +26,8 @@
     "check": "tsc -p tsconfig.json --noEmit",
     "ci": "npm run check && npm test",
     "pack:check": "npm pack --dry-run",
+    "prepack": "node scripts/use-release-readme.mjs",
+    "postpack": "node scripts/restore-readme.mjs",
     "site:build": "npm --prefix site run build",
     "site:preview": "npm --prefix site run preview",
     "preview": "npm --prefix site run preview",

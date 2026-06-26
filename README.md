@@ -82,6 +82,5 @@ It is not intended to become:
 
 ## Project notes
 
-- Planning lives in [`PLAN.md`](./PLAN.md)
 - The committed design lives in [`ARCHITECTURE.md`](./ARCHITECTURE.md)
 - End-user documentation lives in [`./docs`](./docs)

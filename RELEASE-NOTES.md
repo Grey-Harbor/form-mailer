@@ -1,3 +1,43 @@
+# @greyharbor/form-mailer 0.2.1
+
+Release tag: `v0.2.1`
+
+This release tightens the package contract around validation, transport selection, and SMTP authentication. It keeps the public API small, but closes a few edge cases that could previously surprise callers: circular field values now stay inside the typed result flow, ambiguous built-in transport config is rejected early, and SMTP code-first config now supports an explicit token field alongside username and password auth.
+
+## GitHub Release Blurb
+
+`@greyharbor/form-mailer` 0.2.1 is a patch release focused on correctness and contract clarity.
+
+It hardens submission serialization for nested and circular field values, makes built-in HTTP and SMTP configuration mutually exclusive unless you supply a custom transport, and adds explicit SMTP token support for code-first configuration. The release also aligns the architecture, configuration, tutorial, and API docs with the current runtime behavior and expands regression coverage around those paths.
+
+## Highlights
+
+- cycle-safe submission serialization for validation and message rendering
+- nested JSON-like field values are now part of the supported submission contract
+- early config errors when env loading has no built-in transport configured
+- early config errors when built-in HTTP and SMTP config are both provided
+- explicit `smtp.token` support for code-first SMTP configuration
+- documented SMTP secret precedence when both `password` and `token` are present
+- updated architecture, configuration, tutorial, and API reference pages
+- expanded regression coverage for serialization, transport selection, and SMTP secret handling
+
+## Packaging
+
+- published package name: `@greyharbor/form-mailer`
+- npm version: `0.2.1`
+- public package surface is limited to the built runtime output plus `README.md`
+
+## Release Notes
+
+- GitHub Actions publishes on tag pushes that match `v*`
+- npm publish uses the `NPM_TOKEN` repository secret as `NODE_AUTH_TOKEN`
+- the release guide lives in [`docs/how-to/releasing.md`](./docs/how-to/releasing.md)
+
+## Compatibility
+
+- Node.js 20 or newer remains the supported runtime for the package publish target
+- existing SMTP and HTTP integrations remain supported, with stricter validation for ambiguous built-in transport setup
+
 # @greyharbor/form-mailer 0.2.0
 
 Release tag: `v0.2.0`

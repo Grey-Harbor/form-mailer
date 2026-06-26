@@ -121,6 +121,35 @@ PR expectations:
 - note the checks you ran
 - include any important assumptions or follow-up work
 
+GitHub preloads the repository PR template from [`.github/pull_request_template.md`](../../.github/pull_request_template.md).
+Use it to summarize the change, record the checks you ran, and confirm whether docs were updated or intentionally left unchanged.
+
+Mock-up:
+
+```md
+## Summary
+
+- explain the change in plain language
+
+## Checks
+
+- [x] npm run check
+- [x] npm test
+- [ ] npm run site:build (if docs or site output changed)
+
+## Documentation
+
+- [x] No user-facing docs update needed
+- [ ] README.md updated for landing-page changes
+- [ ] ARCHITECTURE.md updated for committed design changes
+- [ ] Relevant page in ./docs updated for behavior, defaults, or usage changes
+
+## Notes
+
+- assumptions:
+- follow-up work:
+```
+
 ## Documentation-specific expectations
 
 If the change affects behavior, defaults, or public usage, keep the project docs aligned:
