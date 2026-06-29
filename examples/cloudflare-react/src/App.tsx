@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { resolveClientEnv } from './env';
+import { resolveClientEnv } from './env.js';
 
 const env = resolveClientEnv();
 

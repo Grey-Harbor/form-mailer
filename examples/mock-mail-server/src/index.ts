@@ -267,6 +267,9 @@ function startSmtpServer(port: number): net.Server {
         }
 
         const [commandName, ...rest] = rawLine.trim().split(/\s+/);
+        if (!commandName) {
+          continue;
+        }
         const command = commandName.toUpperCase();
         const arg = rest.join(' ');
 

@@ -1,5 +1,5 @@
-import { createFormMailer } from '../../../../../src/index.js';
-import type { FormMailSubmission } from '../../../../../src/index.js';
+import { createFormMailer } from '../../../../dist/src/index.js';
+import type { FormMailSubmission } from '../../../../dist/src/index.js';
 
 interface Env {
   CLOUDFLARE_REACT_FROM: string;

@@ -15,6 +15,13 @@ The implementation is currently scaffolded, so use the tutorial page as the flow
 
 - [Tutorial: Mock Mail Server](../../docs/tutorial/mock-mail-server.md)
 
+Local run:
+
+```bash
+npm install
+npm run dev
+```
+
 For the package-level contract that the examples sit beside, see:
 
 - [Documentation home](../../docs/README.md)

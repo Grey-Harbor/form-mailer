@@ -14,6 +14,13 @@ Use the tutorial page for the implementation flow:
 
 - [Tutorial: Node Brochure](../../docs/tutorial/node-brochure.md)
 
+Local run:
+
+```bash
+npm install
+npm run dev
+```
+
 For the package contract that the example builds on, see:
 
 - [Documentation home](../../docs/README.md)

@@ -34,6 +34,17 @@ The SMTP side is the lower-level local contract.
 
 It is there for the Node brochure example and for readers who want to understand a classic mail transport path without introducing a hosted relay.
 
+## Run it locally
+
+From `examples/mock-mail-server`:
+
+```bash
+npm install
+npm run dev
+```
+
+That starts the local scaffold with its own package manifest and scripts.
+
 ## Related docs
 
 - [Examples Workspace](./examples-workspace.md)

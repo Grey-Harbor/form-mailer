@@ -10,6 +10,13 @@ Use the tutorial page to understand the planned flow and the current placeholder
 
 - [Tutorial: Lambda Relay](../../docs/tutorial/lambda-relay.md)
 
+Local run:
+
+```bash
+npm install
+npm run dev
+```
+
 For the package docs that the future relay will sit beside, see:
 
 - [Documentation home](../../docs/README.md)

@@ -1,0 +1,20 @@
+{
+  "name": "node-brochure-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "predev": "npm --prefix ../.. run build",
+    "dev": "tsx src/index.ts",
+    "prestart": "npm --prefix ../.. run build",
+    "start": "tsx src/index.ts",
+    "prebuild": "npm --prefix ../.. run build",
+    "build": "tsc -p tsconfig.json",
+    "precheck": "npm --prefix ../.. run build",
+    "check": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}

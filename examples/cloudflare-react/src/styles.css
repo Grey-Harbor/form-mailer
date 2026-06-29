@@ -67,6 +67,10 @@ body {
   opacity: 0.8;
 }
 
+.muted {
+  color: var(--muted);
+}
+
 .form {
   display: grid;
   gap: 14px;

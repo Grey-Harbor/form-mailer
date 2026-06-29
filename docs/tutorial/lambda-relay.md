@@ -8,6 +8,17 @@ This example is intentionally not implemented yet.
 
 Its role in the workspace is to reserve the shape of the future relay work while making it explicit that the design is still TBD.
 
+## Run it locally
+
+From `examples/lambda-relay`:
+
+```bash
+npm install
+npm run dev
+```
+
+The scaffold only returns a placeholder response for now.
+
 ## Why it is documented now
 
 The directory and tutorial page exist so the plan stays honest about scope.

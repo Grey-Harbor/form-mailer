@@ -22,3 +22,5 @@ Use the tutorial pages for the implementation flow and the package docs for the 
 - [Lambda Relay Tutorial](../docs/tutorial/lambda-relay.md)
 
 For the package contract itself, start at the [Documentation home](../docs/README.md).
+
+Each example directory now has its own `package.json` and local scripts, so you can install and run them from inside the subproject you want to inspect.

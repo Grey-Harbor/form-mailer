@@ -3,9 +3,27 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "npm --prefix ../.. run build",
     "dev": "vite",
+    "prebuild": "npm --prefix ../.. run build",
     "build": "vite build",
+    "precheck": "npm --prefix ../.. run build",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "prepages:dev": "npm --prefix ../.. run build",
     "pages:dev": "wrangler pages dev dist",
+    "prepages:deploy": "npm --prefix ../.. run build",
     "pages:deploy": "wrangler pages deploy dist"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/node": "^22.10.2",
+    "typescript": "^5.6.3",
+    "vite": "^6.0.0",
+    "wrangler": "^3.92.0"
   }
 }

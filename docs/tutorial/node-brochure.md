@@ -37,6 +37,17 @@ That makes the workflow predictable during local development while still leaving
 - SMTP delivery settings that point to the mock server
 - a concise quick-start path that shows how to run the site locally
 
+## Run it locally
+
+From `examples/node-brochure`:
+
+```bash
+npm install
+npm run dev
+```
+
+The example reads `.env.var` from its own directory, so the local settings stay self-contained.
+
 ## Related docs
 
 - [Examples Workspace](./examples-workspace.md)

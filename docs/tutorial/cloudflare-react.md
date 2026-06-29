@@ -40,6 +40,17 @@ The example is meant to wire:
 - `npm run pages:dev` for local development
 - `npm run pages:deploy` for preview and production deployment
 
+## Run it locally
+
+From `examples/cloudflare-react`:
+
+```bash
+npm install
+npm run dev
+```
+
+For the Pages-style flow, use `npm run pages:dev` after the example dependencies are installed.
+
 ## Related docs
 
 - [Examples Workspace](./examples-workspace.md)
