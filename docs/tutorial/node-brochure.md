@@ -26,9 +26,11 @@ The example should also use `form-mailer`'s honeypot behavior. In practice, that
 
 ## Environment model
 
-The example reads from `.env.var` and keeps process environment values available as overrides.
+The example leaves the mail configuration to `form-mailer` itself.
 
-That makes the workflow predictable during local development while still leaving room for normal shell-based overrides.
+In practice, that means `FORM_MAILER_*` values come from the active process environment and, by default, from `.env.var` in `examples/node-brochure` through `FORM_MAILER_ENV_PATH`.
+
+That keeps the workflow predictable during local development while still leaving room for normal shell-based overrides.
 
 ## What to look for in the implementation
 
@@ -46,7 +48,7 @@ npm install
 npm run dev
 ```
 
-The example reads `.env.var` from its own directory, so the local settings stay self-contained.
+The example reads `.env.var` from its own directory through `FORM_MAILER_ENV_PATH`, so the local settings stay self-contained.
 
 ## Related docs
 

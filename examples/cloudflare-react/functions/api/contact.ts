@@ -1,11 +1,11 @@
-import { createFormMailer } from '@greyharbor/form-mailer';
+import { createFormMailer, loadConfigFromEnv } from '@greyharbor/form-mailer';
 import type { FormMailSubmission } from '@greyharbor/form-mailer';
 
 interface Env {
-  CLOUDFLARE_REACT_FROM: string;
-  CLOUDFLARE_REACT_TO: string;
-  CLOUDFLARE_REACT_HTTP_URL: string;
-  CLOUDFLARE_REACT_HTTP_TOKEN?: string | undefined;
+  FORM_MAILER_FROM: string;
+  FORM_MAILER_TO: string;
+  FORM_MAILER_HTTP_URL: string;
+  FORM_MAILER_HTTP_TOKEN?: string | undefined;
   CLOUDFLARE_REACT_TURNSTILE_SECRET_KEY?: string | undefined;
 }
 
@@ -13,18 +13,6 @@ function json(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body, null, 2), {
     status,
     headers: { 'content-type': 'application/json; charset=utf-8' },
-  });
-}
-
-function createMailer(env: Env) {
-  return createFormMailer({
-    from: env.CLOUDFLARE_REACT_FROM,
-    to: [env.CLOUDFLARE_REACT_TO],
-    subject: 'ACME Inc. brochure inquiry',
-    http: {
-      url: env.CLOUDFLARE_REACT_HTTP_URL,
-      token: env.CLOUDFLARE_REACT_HTTP_TOKEN,
-    },
   });
 }
 
@@ -49,6 +37,12 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     honeypot: String(form.get('website') ?? ''),
   };
 
-  const result = await createMailer(env).send(submission);
+  const mailer = createFormMailer(
+    await loadConfigFromEnv({
+      ...env,
+      FORM_MAILER_SUBJECT: 'ACME Inc. brochure inquiry',
+    }),
+  );
+  const result = await mailer.send(submission);
   return json(result.ok ? 202 : 400, result);
 }

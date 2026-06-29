@@ -33,15 +33,17 @@ The mailer itself stays on the server side so the delivery secret never enters t
 
 ## Environment handling
 
-The example supports both `.env.var` and system environment variables.
+The Pages function reads `form-mailer`'s `FORM_MAILER_*` settings from the runtime environment, while the React client keeps its Turnstile site key in the Vite env layer.
+
+For local development, copy `.env.var.example` to `.env.var` and make sure the same `FORM_MAILER_*` names are available to the Pages runtime.
 
 Suggested variables:
 
-- `CLOUDFLARE_REACT_FROM`
-- `CLOUDFLARE_REACT_TO`
-- `CLOUDFLARE_REACT_HTTP_URL`
-- `CLOUDFLARE_REACT_HTTP_TOKEN`
-- `CLOUDFLARE_REACT_TURNSTILE_SITE_KEY`
+- `FORM_MAILER_FROM`
+- `FORM_MAILER_TO`
+- `FORM_MAILER_HTTP_URL`
+- `FORM_MAILER_HTTP_TOKEN`
+- `VITE_CLOUDFLARE_REACT_TURNSTILE_SITE_KEY`
 - `CLOUDFLARE_REACT_TURNSTILE_SECRET_KEY`
 
 The contact form keeps a hidden honeypot field so the Pages function can validate the submission with `form-mailer` before any delivery work begins.

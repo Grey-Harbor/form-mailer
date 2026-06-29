@@ -2,50 +2,13 @@ import fs from 'node:fs/promises';
 import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createFormMailer } from '@greyharbor/form-mailer';
+import { createFormMailer, loadConfigFromEnv } from '@greyharbor/form-mailer';
 import type { FormMailSubmission } from '@greyharbor/form-mailer';
-
-interface ExampleEnv {
-  NODE_BROCHURE_FROM: string;
-  NODE_BROCHURE_TO: string;
-  NODE_BROCHURE_SMTP_HOST: string;
-  NODE_BROCHURE_SMTP_PORT: string;
-  NODE_BROCHURE_SMTP_USERNAME: string;
-  NODE_BROCHURE_SMTP_PASSWORD: string;
-}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '..');
 const DEFAULT_PORT = 3000;
-
-function parseEnvFile(contents: string): Partial<ExampleEnv> {
-  const result: Partial<ExampleEnv> = {};
-  for (const rawLine of contents.split(/\r?\n/)) {
-    const line = rawLine.trim();
-    if (!line || line.startsWith('#')) continue;
-    const index = line.indexOf('=');
-    if (index < 0) continue;
-    const key = line.slice(0, index).trim();
-    const value = line.slice(index + 1).trim().replace(/^"|"$/g, '');
-    (result as Record<string, string>)[key] = value;
-  }
-  return result;
-}
-
-async function loadExampleEnv(): Promise<Partial<ExampleEnv>> {
-  const envPath = path.join(ROOT, '.env.var');
-  try {
-    const contents = await fs.readFile(envPath, 'utf8');
-    return parseEnvFile(contents);
-  } catch {
-    return {};
-  }
-}
-
-function getEnvValue(env: Partial<ExampleEnv>, key: keyof ExampleEnv, fallback = ''): string {
-  return process.env[key] ?? env[key] ?? fallback;
-}
 
 function renderPage(message = ''): string {
   return `<!doctype html>
@@ -199,23 +162,35 @@ async function readForm(request: http.IncomingMessage): Promise<FormData> {
   return form;
 }
 
-function buildMailer(env: Partial<ExampleEnv>) {
-  return createFormMailer({
-    from: getEnvValue(env, 'NODE_BROCHURE_FROM', 'ACME Inc. <hello@acme.example>'),
-    to: [getEnvValue(env, 'NODE_BROCHURE_TO', 'hello@acme.example')],
-    subject: 'ACME Inc. brochure inquiry',
-    smtp: {
-      host: getEnvValue(env, 'NODE_BROCHURE_SMTP_HOST', '127.0.0.1'),
-      port: Number(getEnvValue(env, 'NODE_BROCHURE_SMTP_PORT', '2525')),
-      username: getEnvValue(env, 'NODE_BROCHURE_SMTP_USERNAME', 'admin'),
-      password: getEnvValue(env, 'NODE_BROCHURE_SMTP_PASSWORD', 'admin'),
-    },
-  });
+async function buildMailer() {
+  const envPath = path.join(ROOT, '.env.var');
+  let exampleEnvPath: string | undefined = process.env.FORM_MAILER_ENV_PATH?.trim();
+
+  if (!exampleEnvPath) {
+    try {
+      await fs.access(envPath);
+      exampleEnvPath = envPath;
+    } catch {
+      exampleEnvPath = undefined;
+    }
+  }
+
+  return createFormMailer(
+    await loadConfigFromEnv({
+      ...process.env,
+      FORM_MAILER_ENV_PATH: exampleEnvPath,
+      FORM_MAILER_FROM: process.env.FORM_MAILER_FROM ?? 'ACME Inc. <hello@acme.example>',
+      FORM_MAILER_TO: process.env.FORM_MAILER_TO ?? 'hello@acme.example',
+      FORM_MAILER_SMTP_HOST: process.env.FORM_MAILER_SMTP_HOST ?? '127.0.0.1',
+      FORM_MAILER_SMTP_PORT: process.env.FORM_MAILER_SMTP_PORT ?? '2525',
+      FORM_MAILER_SMTP_USERNAME: process.env.FORM_MAILER_SMTP_USERNAME ?? 'admin',
+      FORM_MAILER_SMTP_PASSWORD: process.env.FORM_MAILER_SMTP_PASSWORD ?? 'admin',
+    }),
+  );
 }
 
 async function main(): Promise<void> {
-  const env = await loadExampleEnv();
-  const mailer = buildMailer(env);
+  const mailer = await buildMailer();
 
   http
     .createServer(async (request, response) => {

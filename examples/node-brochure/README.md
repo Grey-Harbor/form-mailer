@@ -32,24 +32,25 @@ This example is for learning the flow, not for showcasing a framework trick.
 
 It shows how a small Node site can:
 
-- load example-specific settings from `.env.var`
+- load `form-mailer` settings from `.env.var`
 - send contact submissions through the current distributed `@greyharbor/form-mailer` package
 - target the mock mail server’s SMTP endpoint during local development
 
 ## Local settings
 
-The example reads example-specific settings from `.env.var` and lets process environment values override them.
+The example lets `form-mailer` read its own settings from the active process environment and, by default, from `.env.var` in this directory through `FORM_MAILER_ENV_PATH`.
 
 Suggested variables:
 
-- `NODE_BROCHURE_FROM`
-- `NODE_BROCHURE_TO`
-- `NODE_BROCHURE_SMTP_HOST`
-- `NODE_BROCHURE_SMTP_PORT`
-- `NODE_BROCHURE_SMTP_USERNAME`
-- `NODE_BROCHURE_SMTP_PASSWORD`
+- `FORM_MAILER_FROM`
+- `FORM_MAILER_TO`
+- `FORM_MAILER_SMTP_HOST`
+- `FORM_MAILER_SMTP_PORT`
+- `FORM_MAILER_SMTP_USERNAME`
+- `FORM_MAILER_SMTP_PASSWORD`
+- `FORM_MAILER_ENV_PATH`
 
-The local development defaults point to the mock SMTP server.
+The local development defaults point to the mock SMTP server, so you can run the example with the sample env file and the mock mail server side by side.
 
 The contact form also uses `form-mailer`'s honeypot behavior, so the hidden `website` field should stay in the markup and in the submission path.
 

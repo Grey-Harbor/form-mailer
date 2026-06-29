@@ -29,9 +29,11 @@ This example uses both a honeypot and Turnstile:
 
 ## Environment model
 
-The example should support both `.env.var` and system environment variables.
+The mailer configuration should stay on `form-mailer`'s own `FORM_MAILER_*` contract.
 
-That keeps the local path approachable and still matches how Cloudflare deployments tend to receive runtime config.
+That means the Pages function receives the mail settings from the runtime environment, while the React app keeps only its Turnstile site key in the Vite env layer (`VITE_CLOUDFLARE_REACT_TURNSTILE_SITE_KEY`).
+
+For local development, keep the shared sample values in `.env.var` and make sure the same `FORM_MAILER_*` names are available to the Pages runtime.
 
 ## Deployment commands
 
