@@ -1,26 +1,43 @@
 import { useState, type FormEvent } from 'react';
 import { resolveClientEnv } from './env.js';
+import { TurnstileWidget } from './TurnstileWidget.js';
 
 const env = resolveClientEnv();
 
 export function App() {
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [message, setMessage] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [turnstileKey, setTurnstileKey] = useState(0);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!turnstileToken) {
+      setStatus('error');
+      setMessage('Complete the Turnstile widget before sending the form.');
+      return;
+    }
+
     setStatus('sending');
 
     const formData = new FormData(event.currentTarget);
+    formData.set('turnstileToken', turnstileToken);
+
     const response = await fetch('/api/contact', {
       method: 'POST',
       body: formData,
     });
-    const result = (await response.json()) as { ok?: boolean; error?: unknown };
+    const result = (await response.json()) as {
+      ok?: boolean;
+      error?: unknown;
+    };
 
     if (response.ok && result.ok !== false) {
       setStatus('sent');
-      setMessage('Thanks. The message was accepted by the mock HTTP endpoint.');
+      setMessage('Thanks. The message was accepted after Turnstile verification.');
+      setTurnstileToken('');
+      setTurnstileKey((value) => value + 1);
       event.currentTarget.reset();
       return;
     }
@@ -51,8 +68,8 @@ export function App() {
       <section className="card">
         <h2>Contact ACME Inc.</h2>
         <p className="muted">
-          Turnstile support is wired through the Pages function. The client keeps the site key visible so the example
-          shows where the protection step belongs without hiding the flow.
+          The widget below is the real Turnstile integration path. For a test site key and secret, use Cloudflare's
+          testing guidance in the docs.
         </p>
         <form onSubmit={onSubmit} className="form">
           <label>
@@ -68,8 +85,9 @@ export function App() {
             Message
             <textarea name="message" required />
           </label>
-          <input type="hidden" name="turnstileToken" value="mock-turnstile-token" />
-          <button type="submit" disabled={status === 'sending'}>
+          <input type="hidden" name="turnstileToken" value={turnstileToken} />
+          <TurnstileWidget key={turnstileKey} siteKey={env.TURNSTILE_SITE_KEY ?? ''} onToken={setTurnstileToken} />
+          <button type="submit" disabled={status === 'sending' || !turnstileToken}>
             {status === 'sending' ? 'Sending...' : 'Send message'}
           </button>
         </form>

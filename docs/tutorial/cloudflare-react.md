@@ -27,6 +27,9 @@ This example uses both a honeypot and Turnstile:
 - the honeypot keeps the submission aligned with `form-mailer`'s validation flow
 - Turnstile adds a browser-side protection step that the Pages function can verify
 
+If you need a dummy site key or secret for local testing, Cloudflare documents the testing values here:
+[Turnstile testing](https://developers.cloudflare.com/turnstile/troubleshooting/testing/).
+
 ## Environment model
 
 The mailer configuration should stay on `form-mailer`'s own `FORM_MAILER_*` contract.

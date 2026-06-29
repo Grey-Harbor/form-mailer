@@ -9,6 +9,11 @@ interface Env {
   TURNSTILE_SECRET_KEY?: string | undefined;
 }
 
+interface TurnstileVerificationResult {
+  success: boolean;
+  'error-codes'?: string[];
+}
+
 function json(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body, null, 2), {
     status,
@@ -16,18 +21,50 @@ function json(status: number, body: unknown): Response {
   });
 }
 
-async function verifyTurnstile(token: string, secret: string | undefined): Promise<boolean> {
-  if (!secret) return true;
-  if (!token) return false;
-  return token === 'mock-turnstile-token';
+async function verifyTurnstile(token: string, secret: string): Promise<{ ok: true } | { ok: false; error: string }> {
+  const body = new URLSearchParams({
+    secret,
+    response: token,
+  });
+
+  const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+    method: 'POST',
+    body,
+  });
+
+  if (!response.ok) {
+    return { ok: false, error: 'Turnstile verification request failed.' };
+  }
+
+  const result = (await response.json()) as TurnstileVerificationResult;
+  if (!result.success) {
+    return {
+      ok: false,
+      error: result['error-codes']?.join(', ') || 'Turnstile verification failed.',
+    };
+  }
+
+  return { ok: true };
 }
 
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
-  const form = await request.formData();
-  const turnstileToken = String(form.get('turnstileToken') ?? '');
+  if (!env.TURNSTILE_SECRET_KEY) {
+    return json(500, {
+      ok: false,
+      error: 'TURNSTILE_SECRET_KEY is required.',
+    });
+  }
 
-  if (!(await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET_KEY))) {
-    return json(400, { ok: false, error: 'Turnstile verification failed' });
+  const form = await request.formData();
+  const turnstileToken = String(form.get('turnstileToken') ?? '').trim();
+
+  if (!turnstileToken) {
+    return json(400, { ok: false, error: 'Turnstile token is missing.' });
+  }
+
+  const turnstileResult = await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET_KEY);
+  if (!turnstileResult.ok) {
+    return json(400, { ok: false, error: turnstileResult.error });
   }
 
   const submission: FormMailSubmission = {

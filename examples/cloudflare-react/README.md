@@ -30,12 +30,15 @@ For the package contract that the example builds on, see:
 
 The browser bundle only collects the form data and posts it to the Pages function.
 The mailer itself stays on the server side so the delivery secret never enters the client bundle.
+The Turnstile widget uses the official Cloudflare testing flow when you need a dummy site key or secret:
+[Turnstile testing](https://developers.cloudflare.com/turnstile/troubleshooting/testing/).
 
 ## Environment handling
 
 The Pages function reads `form-mailer`'s `FORM_MAILER_*` settings from the runtime environment, while the React client reads `TURNSTILE_SITE_KEY` through Vite's `TURNSTILE_` env prefix.
 
 For local development, copy `.env.var.example` to `.env.var` and make sure the same `FORM_MAILER_*` names are available to the Pages runtime.
+If you need the dummy Turnstile values, use the Cloudflare testing guidance above.
 
 Suggested variables:
 
