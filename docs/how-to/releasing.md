@@ -27,6 +27,8 @@ Use Conventional Commits to decide the next semver bump:
 4. Create and push a semver tag like `v0.2.0`.
 5. Let GitHub Actions run the existing checks and publish with `npm publish --provenance`.
 
+Update the app version metadata in `examples/cloudflare-react/package.json` and `examples/node-brochure/package.json` as part of every release so the release notes and the example workspace stay aligned.
+
 The CI publish job should only run for tag pushes that match `v*`.
 
 ## GitHub Actions secret
