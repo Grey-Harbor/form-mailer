@@ -31,7 +31,7 @@ This example uses both a honeypot and Turnstile:
 
 The mailer configuration should stay on `form-mailer`'s own `FORM_MAILER_*` contract.
 
-That means the Pages function receives the mail settings from the runtime environment, while the React app keeps only its Turnstile site key in the Vite env layer (`VITE_TURNSTILE_SITE_KEY`).
+That means the Pages function receives the mail settings from the runtime environment, while the React app keeps only its Turnstile site key in the generic `TURNSTILE_SITE_KEY` env var. Vite exposes that prefix to the client bundle through the example's local config.
 
 For local development, keep the shared sample values in `.env.var` and make sure the same `FORM_MAILER_*` names are available to the Pages runtime.
 
