@@ -1,6 +1,6 @@
 # Node Brochure
 
-`node-brochure` is the brochure-style example for `ACME Inc.`.
+`node-brochure` is the brochure-style proof of concept for `ACME Inc.`.
 
 It is intentionally simple and content-led:
 
@@ -33,7 +33,7 @@ This example is for learning the flow, not for showcasing a framework trick.
 It shows how a small Node site can:
 
 - load example-specific settings from `.env.var`
-- send contact submissions through the package mailer
+- send contact submissions through the current distributed `@greyharbor/form-mailer` package
 - target the mock mail server’s SMTP endpoint during local development
 
 ## Local settings

@@ -1,6 +1,6 @@
 # Mock Mail Server
 
-`mock-mail-server` is the local test endpoint for the example workspace.
+`mock-mail-server` is the local proof-of-concept mail server for the example workspace.
 
 It exists to make the other examples boring to wire up:
 

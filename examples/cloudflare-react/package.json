@@ -3,18 +3,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "predev": "npm --prefix ../.. run build",
     "dev": "vite",
-    "prebuild": "npm --prefix ../.. run build",
     "build": "vite build",
-    "precheck": "npm --prefix ../.. run build",
     "check": "tsc -p tsconfig.json --noEmit",
-    "prepages:dev": "npm --prefix ../.. run build",
     "pages:dev": "wrangler pages dev dist",
-    "prepages:deploy": "npm --prefix ../.. run build",
     "pages:deploy": "wrangler pages deploy dist"
   },
   "dependencies": {
+    "@greyharbor/form-mailer": "file:../..",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

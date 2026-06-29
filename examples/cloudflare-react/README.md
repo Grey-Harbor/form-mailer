@@ -1,12 +1,12 @@
 # Cloudflare React
 
-`cloudflare-react` is the fully deployable Cloudflare Pages example.
+`cloudflare-react` is the fully deployable Cloudflare Pages proof of concept.
 
 It is built to teach the flow clearly:
 
 - stacked hero, content, and contact sections
 - a React front end in TypeScript
-- a Pages function that sends mail through `form-mailer`
+- a Pages function that sends mail through the current distributed `@greyharbor/form-mailer` package
 - mock-server HTTP delivery during local development
 - Turnstile protection on the contact path
 

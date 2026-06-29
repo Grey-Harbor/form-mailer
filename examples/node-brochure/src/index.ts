@@ -2,8 +2,8 @@ import fs from 'node:fs/promises';
 import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createFormMailer } from '../../../dist/src/index.js';
-import type { FormMailSubmission } from '../../../dist/src/index.js';
+import { createFormMailer } from '@greyharbor/form-mailer';
+import type { FormMailSubmission } from '@greyharbor/form-mailer';
 
 interface ExampleEnv {
   NODE_BROCHURE_FROM: string;

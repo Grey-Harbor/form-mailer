@@ -1,6 +1,6 @@
 # Examples Workspace
 
-This directory is the project’s instructional demo workspace.
+This directory is the project’s instructional proof-of-concept workspace.
 
 The old shared demo shape is retired. Each subproject now owns its own flow, docs, and runtime assumptions.
 
@@ -24,3 +24,5 @@ Use the tutorial pages for the implementation flow and the package docs for the 
 For the package contract itself, start at the [Documentation home](../docs/README.md).
 
 Each example directory now has its own `package.json` and local scripts, so you can install and run them from inside the subproject you want to inspect.
+
+The POC apps that send mail consume the current distributed `@greyharbor/form-mailer` package through a local `file:../..` dependency, which keeps the examples aligned with the packaged build instead of importing repo internals directly.

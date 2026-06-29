@@ -1,6 +1,6 @@
 # Lambda Relay
 
-`lambda-relay` is a placeholder AWS Lambda example for the next phase of the workspace.
+`lambda-relay` is a placeholder AWS Lambda proof of concept for the next phase of the workspace.
 
 It is intentionally scaffold-only for now.
 
