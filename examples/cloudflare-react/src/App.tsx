@@ -74,7 +74,7 @@ export function App() {
           </button>
         </form>
         <p className="muted">
-          Turnstile site key: <code>{env.CLOUDFLARE_REACT_TURNSTILE_SITE_KEY || 'not set'}</code>
+          Turnstile site key: <code>{env.TURNSTILE_SITE_KEY || 'not set'}</code>
         </p>
         {message ? <p className={status === 'error' ? 'error' : 'success'}>{message}</p> : null}
       </section>

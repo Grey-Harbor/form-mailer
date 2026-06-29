@@ -43,8 +43,8 @@ Suggested variables:
 - `FORM_MAILER_TO`
 - `FORM_MAILER_HTTP_URL`
 - `FORM_MAILER_HTTP_TOKEN`
-- `VITE_CLOUDFLARE_REACT_TURNSTILE_SITE_KEY`
-- `CLOUDFLARE_REACT_TURNSTILE_SECRET_KEY`
+- `VITE_TURNSTILE_SITE_KEY`
+- `TURNSTILE_SECRET_KEY`
 
 The contact form keeps a hidden honeypot field so the Pages function can validate the submission with `form-mailer` before any delivery work begins.
 

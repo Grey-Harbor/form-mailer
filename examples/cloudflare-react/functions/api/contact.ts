@@ -6,7 +6,7 @@ interface Env {
   FORM_MAILER_TO: string;
   FORM_MAILER_HTTP_URL: string;
   FORM_MAILER_HTTP_TOKEN?: string | undefined;
-  CLOUDFLARE_REACT_TURNSTILE_SECRET_KEY?: string | undefined;
+  TURNSTILE_SECRET_KEY?: string | undefined;
 }
 
 function json(status: number, body: unknown): Response {
@@ -26,7 +26,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const form = await request.formData();
   const turnstileToken = String(form.get('turnstileToken') ?? '');
 
-  if (!(await verifyTurnstile(turnstileToken, env.CLOUDFLARE_REACT_TURNSTILE_SECRET_KEY))) {
+  if (!(await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET_KEY))) {
     return json(400, { ok: false, error: 'Turnstile verification failed' });
   }
 
