@@ -66,8 +66,8 @@ export function TurnstileWidget({ siteKey, onToken }: TurnstileWidgetProps) {
   if (status === 'missing') {
     return (
       <p className="muted">
-        Turnstile site key is missing. Use the testing page linked in the docs to get a test site key and secret,
-        then set <code>TURNSTILE_SITE_KEY</code>.
+        Turnstile site key is missing. Set <code>TURNSTILE_SITE_KEY</code> before running the client, and use the
+        testing page linked in the docs if you need a dummy public key.
       </p>
     );
   }

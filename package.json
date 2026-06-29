@@ -45,6 +45,10 @@
       "types": "./dist/src/index.d.ts",
       "default": "./dist/src/index.js"
     },
+    "./worker": {
+      "types": "./dist/src/worker.d.ts",
+      "default": "./dist/src/worker.js"
+    },
     "./package.json": "./package.json"
   },
   "devDependencies": {

@@ -34,15 +34,20 @@ If you need a dummy site key or secret for local testing, Cloudflare documents t
 
 The mailer configuration should stay on `form-mailer`'s own `FORM_MAILER_*` contract.
 
-That means the Pages function receives the mail settings from the runtime environment, while the React app keeps only its Turnstile site key in the generic `TURNSTILE_SITE_KEY` env var. Vite exposes that prefix to the client bundle through the example's local config.
+That means:
 
-For local development, keep the shared sample values in `.env.var` and make sure the same `FORM_MAILER_*` names are available to the Pages runtime.
+- `npm run pages:dev` reads `FORM_MAILER_*` and `TURNSTILE_SECRET_KEY` from `.dev.vars` through Wrangler
+- `npm run dev` reads `TURNSTILE_SITE_KEY` from `.dev.vars` first, then from the shell through Vite's `TURNSTILE_` env prefix
+
+The split keeps delivery secrets on the Pages side and keeps the browser bundle limited to the public Turnstile site key.
+
+If you need Cloudflare's dummy Turnstile values for local testing, the public site key goes in `TURNSTILE_SITE_KEY` and the matching secret goes in `.dev.vars` for `npm run pages:dev`.
 
 ## Deployment commands
 
 The example is meant to wire:
 
-- `npm run pages:dev` for local development
+- `npm run pages:dev` for local development through the npm wrapper around Wrangler
 - `npm run pages:deploy` for preview and production deployment
 
 ## Run it locally
@@ -54,7 +59,7 @@ npm install
 npm run dev
 ```
 
-For the Pages-style flow, use `npm run pages:dev` after the example dependencies are installed.
+For the Pages-style flow, use `npm run pages:dev` after the example dependencies are installed. In this workspace, that is the supported local command because Wrangler is invoked through the npm script instead of relying on a shell `PATH` entry.
 
 ## Related docs
 

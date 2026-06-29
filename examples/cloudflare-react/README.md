@@ -35,25 +35,20 @@ The Turnstile widget uses the official Cloudflare testing flow when you need a d
 
 ## Environment handling
 
-The Pages function reads `form-mailer`'s `FORM_MAILER_*` settings from the runtime environment, while the React client reads `TURNSTILE_SITE_KEY` through Vite's `TURNSTILE_` env prefix.
+There are two separate local env paths:
 
-For local development, copy `.env.var.example` to `.env.var` and make sure the same `FORM_MAILER_*` names are available to the Pages runtime.
-If you need the dummy Turnstile values, use the Cloudflare testing guidance above.
+- `npm run pages:dev` reads `FORM_MAILER_*` and `TURNSTILE_SECRET_KEY` from `.dev.vars` through Wrangler
+- `npm run dev` reads `TURNSTILE_SITE_KEY` from `.dev.vars` first, then from the shell through Vite's `TURNSTILE_` prefix
 
-Suggested variables:
+That split keeps delivery secrets on the Pages side and keeps the client bundle limited to the public Turnstile site key.
 
-- `FORM_MAILER_FROM`
-- `FORM_MAILER_TO`
-- `FORM_MAILER_HTTP_URL`
-- `FORM_MAILER_HTTP_TOKEN`
-- `TURNSTILE_SITE_KEY`
-- `TURNSTILE_SECRET_KEY`
+If you need the dummy Turnstile values, use the Cloudflare testing guidance above. The public test site key belongs in `TURNSTILE_SITE_KEY`; the matching secret belongs in `.dev.vars` for `npm run pages:dev`.
 
 The contact form keeps a hidden honeypot field so the Pages function can validate the submission with `form-mailer` before any delivery work begins.
 
 ## Commands
 
-- `npm run pages:dev` for local development through Wrangler
+- `npm run pages:dev` for local development through the npm wrapper around Wrangler
 - `npm run pages:deploy` for preview and production deployment through Wrangler
 
 ## Source

@@ -12,6 +12,7 @@ export function App() {
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
 
     if (!turnstileToken) {
       setStatus('error');
@@ -20,30 +21,38 @@ export function App() {
     }
 
     setStatus('sending');
+    try {
+      const formData = new FormData(form);
+      formData.set('turnstileToken', turnstileToken);
 
-    const formData = new FormData(event.currentTarget);
-    formData.set('turnstileToken', turnstileToken);
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        body: formData,
+      });
 
-    const response = await fetch('/api/contact', {
-      method: 'POST',
-      body: formData,
-    });
-    const result = (await response.json()) as {
-      ok?: boolean;
-      error?: unknown;
-    };
+      const rawBody = await response.text();
+      const result = rawBody
+        ? (JSON.parse(rawBody) as {
+            ok?: boolean;
+            error?: unknown;
+          })
+        : { ok: false, error: 'Empty response from the contact endpoint.' };
 
-    if (response.ok && result.ok !== false) {
-      setStatus('sent');
-      setMessage('Thanks. The message was accepted after Turnstile verification.');
-      setTurnstileToken('');
-      setTurnstileKey((value) => value + 1);
-      event.currentTarget.reset();
-      return;
+      if (response.ok && result.ok !== false) {
+        setStatus('sent');
+        setMessage('Thanks. The message was accepted after Turnstile verification.');
+        setTurnstileToken('');
+        setTurnstileKey((value) => value + 1);
+        form.reset();
+        return;
+      }
+
+      setStatus('error');
+      setMessage(typeof result.error === 'string' ? result.error : 'Message failed');
+    } catch (error) {
+      setStatus('error');
+      setMessage(error instanceof Error ? error.message : 'Message failed');
     }
-
-    setStatus('error');
-    setMessage(typeof result.error === 'string' ? result.error : 'Message failed');
   }
 
   return (
@@ -91,9 +100,6 @@ export function App() {
             {status === 'sending' ? 'Sending...' : 'Send message'}
           </button>
         </form>
-        <p className="muted">
-          Turnstile site key: <code>{env.TURNSTILE_SITE_KEY || 'not set'}</code>
-        </p>
         {message ? <p className={status === 'error' ? 'error' : 'success'}>{message}</p> : null}
       </section>
     </main>
