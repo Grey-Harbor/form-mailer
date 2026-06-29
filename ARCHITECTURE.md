@@ -61,8 +61,10 @@ The implementation is organized into small modules:
 - `src/smtp.ts` sends the message over SMTP
 - `src/errors.ts` creates the package error type
 - `src/types.ts` defines the public TypeScript contracts
-- `examples/shared/*` contains the demo transport and mailer helpers
-- `examples/cloudflare-worker/*` and `examples/aws-lambda/*` show the runtime-specific entrypoints
+- `examples/mock-mail-server/*` contains the local SMTP and HTTP mail server scaffold
+- `examples/node-brochure/*` shows the ACME Inc. brochure-site flow
+- `examples/cloudflare-react/*` shows the Cloudflare Pages React flow
+- `examples/lambda-relay/*` keeps the AWS Lambda relay scaffold and notes
 
 ## Public Surface
 
@@ -135,12 +137,13 @@ This keeps the package open to custom transports without turning the core API in
 
 ### 5. Reuse the core in demos
 
-The same core mailer flow can run inside demo runtimes that supply their own transport adapter.
+The same core mailer flow can run inside example runtimes that supply their own transport adapter.
 
 That pattern keeps the project useful in environments such as:
 
-- Cloudflare Workers
+- Cloudflare Pages
 - AWS Lambda
+- local brochure-style sites
 - other serverless handlers with a compatible transport adapter
 
 ## Configuration Architecture

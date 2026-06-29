@@ -1,0 +1,11 @@
+{
+  "name": "cloudflare-react-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "pages:dev": "wrangler pages dev dist",
+    "pages:deploy": "wrangler pages deploy dist"
+  }
+}

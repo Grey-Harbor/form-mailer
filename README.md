@@ -18,6 +18,7 @@ If you'd like to explore the project site, [Click Here](https://form-mailer.grey
 - [How-to Guides](./docs/how-to/README.md)
 - [Reference](./docs/reference/README.md)
 - [Explanation](./docs/explanation/README.md)
+- [Examples workspace](./examples/README.md)
 
 ## Why it exists
 
@@ -84,3 +85,20 @@ It is not intended to become:
 
 - The committed design lives in [`ARCHITECTURE.md`](./ARCHITECTURE.md)
 - End-user documentation lives in [`./docs`](./docs)
+- The instructional example workspace lives in [`./examples`](./examples)
+
+## Quick Start
+
+For the package itself, install and try the main tutorial first:
+
+```bash
+npm install
+npm test
+```
+
+Then continue into the example workspace docs if you want the deployment-oriented flows:
+
+- [Examples Workspace Tutorial](./docs/tutorial/examples-workspace.md)
+- [Mock Mail Server Tutorial](./docs/tutorial/mock-mail-server.md)
+- [Node Brochure Tutorial](./docs/tutorial/node-brochure.md)
+- [Cloudflare React Tutorial](./docs/tutorial/cloudflare-react.md)
