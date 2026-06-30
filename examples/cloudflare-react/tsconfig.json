@@ -34,7 +34,6 @@
     "components/**/*.ts",
     "components/**/*.tsx",
     "functions/**/*.ts",
-    "lib/**/*.ts",
     "next-env.d.ts",
     ".next/types/**/*.ts"
   ],

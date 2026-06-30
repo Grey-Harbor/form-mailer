@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { loadTurnstileScript } from '../lib/turnstile';
+import { loadTurnstileScript } from './lib/turnstile';
 
 interface TurnstileWidgetProps {
   siteKey: string;

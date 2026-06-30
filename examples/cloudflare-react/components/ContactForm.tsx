@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
-import { resolveClientEnv } from '../lib/env';
+import { resolveClientEnv } from './lib/env';
 import { TurnstileWidget } from './TurnstileWidget';
 
 const env = resolveClientEnv();

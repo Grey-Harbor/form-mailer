@@ -4,10 +4,11 @@
   "version": "0.3.0",
   "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "npm run pages:dev",
+    "dev:ui": "next dev",
     "build": "next build",
     "check": "tsc -p tsconfig.json --noEmit",
-    "pages:dev": "npm run build && wrangler pages dev out",
+    "pages:dev": "npm run build && CLOUDFLARE_INCLUDE_PROCESS_ENV=true wrangler pages dev out",
     "pages:deploy": "wrangler pages deploy out"
   },
   "dependencies": {

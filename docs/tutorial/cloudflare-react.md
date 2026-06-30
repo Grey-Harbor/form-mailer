@@ -36,20 +36,24 @@ The mailer configuration should stay on `form-mailer`'s own `FORM_MAILER_*` cont
 
 That means:
 
-- `npm run dev` and `npm run build` read `NEXT_PUBLIC_TURNSTILE_SITE_KEY` from `.env.local` or the shell so Next.js can render the static site
-- `npm run pages:dev` reads `FORM_MAILER_*` and `TURNSTILE_SECRET_KEY` from `.dev.vars` through Wrangler so the Pages function can run server-side
+- `npm run build` and `npm run pages:dev` can read `NEXT_PUBLIC_TURNSTILE_SITE_KEY` from system env or the optional `.env.local` file so Next.js can render the static site
+- `npm run pages:dev` can read `FORM_MAILER_*` and `TURNSTILE_SECRET_KEY` from system env, and the example also keeps `.dev.vars` as an optional local convenience path for Wrangler
+
+If you want to preview only the front end without the Pages function, `npm run dev:ui` runs the raw Next.js app. That mode is useful for layout work, but it is not the end-to-end contact flow.
+
+When both a file value and a system env value exist, the live environment should be treated as the source of truth.
 
 The split keeps delivery secrets on the Pages side and keeps the browser bundle limited to the public Turnstile site key.
 
-If you need Cloudflare's dummy Turnstile values for local testing, the public site key goes in `.env.local` as `NEXT_PUBLIC_TURNSTILE_SITE_KEY` and the matching secret goes in `.dev.vars`.
+If you need Cloudflare's dummy Turnstile values for local testing, the public site key goes in `NEXT_PUBLIC_TURNSTILE_SITE_KEY` and the matching secret goes in `TURNSTILE_SECRET_KEY`, whether you provide them through system env or the optional local files.
 
 ## Deployment commands
 
 The example is meant to wire:
 
-- `npm run dev` for local development
 - `npm run build` for a production export into `out/`
 - `npm run pages:dev` for a local Cloudflare Pages preview backed by the exported site and Pages Functions
+- `npm run dev:ui` for an optional UI-only Next.js preview
 - `npm run pages:deploy` for deployment to Cloudflare Pages
 
 ## Run it locally
@@ -58,7 +62,7 @@ From `examples/cloudflare-react`:
 
 ```bash
 npm install
-npm run dev
+npm run pages:dev
 ```
 
 ## Related docs
