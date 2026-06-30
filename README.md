@@ -1,7 +1,7 @@
 ![form-mailer](https://form-mailer.greyharborsoftware.com/brand/social-card.png)
 
 [![CI](https://github.com/Grey-Harbor/form-mailer/actions/workflows/ci.yml/badge.svg)](https://github.com/Grey-Harbor/form-mailer/actions/workflows/ci.yml)
-[![npm version](https://badge.fury.io/js/@greyharbor%2Fform-mailer.svg?v=0.3.0)](https://badge.fury.io/js/@greyharbor%2Fform-mailer)
+[![npm version](https://badge.fury.io/js/@greyharbor%2Fform-mailer.svg?v=v0.3.0)](https://badge.fury.io/js/@greyharbor%2Fform-mailer)
 
 # form-mailer
 
