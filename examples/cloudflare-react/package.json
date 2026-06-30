@@ -1,6 +1,7 @@
 {
   "name": "cloudflare-react-example",
   "private": true,
+  "version": "0.3.0",
   "type": "module",
   "scripts": {
     "postinstall": "node scripts/sync-form-mailer-worker.mjs",

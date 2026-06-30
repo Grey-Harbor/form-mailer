@@ -25,4 +25,4 @@ For the package contract itself, start at the [Documentation home](../docs/READM
 
 Each example directory now has its own `package.json` and local scripts, so you can install and run them from inside the subproject you want to inspect.
 
-The POC apps that send mail consume the current distributed `@greyharbor/form-mailer` package through a local `file:../..` dependency, which keeps the examples aligned with the packaged build instead of importing repo internals directly.
+The POC apps that send mail consume the current distributed `@greyharbor/form-mailer` package as a normal package dependency, which keeps the examples aligned with the published contract instead of importing repo internals directly.
