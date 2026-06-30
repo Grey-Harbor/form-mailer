@@ -1,5 +1,5 @@
-import { createFormMailer } from '../../src/form-mailer-worker.js';
-import type { FormMailSubmission, SendMailOutcome } from '../../src/form-mailer-worker.js';
+import { createFormMailer } from '@greyharbor/form-mailer/worker';
+import type { FormMailSubmission, SendMailOutcome } from '@greyharbor/form-mailer/worker';
 
 interface Env {
   FORM_MAILER_FROM: string;
