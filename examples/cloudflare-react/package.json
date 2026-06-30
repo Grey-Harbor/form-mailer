@@ -4,8 +4,6 @@
   "version": "0.3.0",
   "type": "module",
   "scripts": {
-    "postinstall": "node scripts/sync-form-mailer-worker.mjs",
-    "prepare:worker": "node scripts/sync-form-mailer-worker.mjs",
     "dev": "vite",
     "build": "vite build",
     "check": "tsc -p tsconfig.json --noEmit",
@@ -13,7 +11,7 @@
     "pages:deploy": "wrangler pages deploy dist"
   },
   "dependencies": {
-    "@greyharbor/form-mailer": "0.2.0",
+    "@greyharbor/form-mailer": "0.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

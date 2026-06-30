@@ -15,6 +15,6 @@
     "typescript": "^5.6.3"
   },
   "dependencies": {
-    "@greyharbor/form-mailer": "0.2.0"
+    "@greyharbor/form-mailer": "0.3.0"
   }
 }
