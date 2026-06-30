@@ -101,4 +101,4 @@ Then continue into the example workspace docs if you want the deployment-oriente
 - [Examples Workspace Tutorial](./docs/tutorial/examples-workspace.md)
 - [Mock Mail Server Tutorial](./docs/tutorial/mock-mail-server.md)
 - [Node Brochure Tutorial](./docs/tutorial/node-brochure.md)
-- [Cloudflare React Tutorial](./docs/tutorial/cloudflare-react.md)
+- [Cloudflare React Tutorial on Next.js](./docs/tutorial/cloudflare-react.md)

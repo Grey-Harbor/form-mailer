@@ -1,12 +1,12 @@
 # Cloudflare React
 
-`cloudflare-react` is the fully deployable Cloudflare Pages proof of concept.
+`cloudflare-react` is a Next.js proof of concept that stays deployable on Cloudflare Pages.
 
 It is built to teach the flow clearly:
 
 - stacked hero, content, and contact sections
-- a React front end in TypeScript
-- a Pages function that sends mail through the current distributed `@greyharbor/form-mailer` package
+- a React front end in TypeScript and the Next.js app router
+- a Cloudflare Pages function that sends mail through the current distributed `@greyharbor/form-mailer` package
 - mock-server HTTP delivery during local development
 - Turnstile protection on the contact path
 
@@ -16,11 +16,11 @@ Use the tutorial page for the implementation flow:
 
 - [Tutorial: Cloudflare React](../../docs/tutorial/cloudflare-react.md)
 
-Local run:
+End-to-end local run:
 
 ```bash
 npm install
-npm run dev
+npm run pages:dev
 ```
 
 For the package contract that the example builds on, see:
@@ -35,23 +35,33 @@ The Turnstile widget uses the official Cloudflare testing flow when you need a d
 
 ## Environment handling
 
-There are two separate local env paths:
+All required values can come from system environment variables.
 
-- `npm run pages:dev` reads `FORM_MAILER_*` and `TURNSTILE_SECRET_KEY` from `.dev.vars` through Wrangler
-- `npm run dev` reads `TURNSTILE_SITE_KEY` from `.dev.vars` first, then from the shell through Vite's `TURNSTILE_` prefix
+The example files are optional local helpers:
+
+- system env can supply `NEXT_PUBLIC_TURNSTILE_SITE_KEY` for `npm run build`, `npm run pages:dev`, and the optional UI-only `npm run dev:ui`
+- system env can also supply `FORM_MAILER_*` and `TURNSTILE_SECRET_KEY` for `npm run pages:dev`
+- `.env.local` is an optional convenience file for the public Next.js variable
+- `.dev.vars` is an optional Wrangler convenience file for local Pages previews
+
+When both a file value and a system env value exist, the live environment should be treated as the source of truth.
 
 That split keeps delivery secrets on the Pages side and keeps the client bundle limited to the public Turnstile site key.
 
-If you need the dummy Turnstile values, use the Cloudflare testing guidance above. The public test site key belongs in `TURNSTILE_SITE_KEY`; the matching secret belongs in `.dev.vars` for `npm run pages:dev`.
+If you need the dummy Turnstile values, use the Cloudflare testing guidance above. The public test site key belongs in `NEXT_PUBLIC_TURNSTILE_SITE_KEY`; the matching secret belongs in `TURNSTILE_SECRET_KEY`. You can provide them either through system env or the optional local files.
 
 The contact form keeps a hidden honeypot field so the Pages function can validate the submission with `form-mailer` before any delivery work begins.
 
 ## Commands
 
-- `npm run pages:dev` for local development through the npm wrapper around Wrangler
-- `npm run pages:deploy` for preview and production deployment through Wrangler
+- `npm run dev` as an alias for the end-to-end `npm run pages:dev` flow
+- `npm run dev:ui` for a UI-only Next.js preview without the Pages function
+- `npm run build` to export the static Next.js app into `out/`
+- `npm run pages:dev` to preview the static app plus Pages Functions through Wrangler
+- `npm run pages:deploy` to deploy the exported app to Cloudflare Pages
 
 ## Source
 
-- React app: [`src/App.tsx`](./src/App.tsx)
+- React app: [`app/page.tsx`](./app/page.tsx)
+- Contact form: [`components/ContactForm.tsx`](./components/ContactForm.tsx)
 - Pages function: [`functions/api/contact.ts`](./functions/api/contact.ts)

@@ -13,7 +13,7 @@ The old shared demo material is retired. The current example set is:
 
 - start with the [Mock Mail Server](./mock-mail-server.md) because it defines the local test contract
 - use [Node Brochure](./node-brochure.md) for the Node-based contact form flow
-- use [Cloudflare React](./cloudflare-react.md) for the Cloudflare Pages flow
+- use [Cloudflare React](./cloudflare-react.md) for the Next.js flow
 - treat [Lambda Relay](./lambda-relay.md) as a scaffold and planning placeholder
 
 ## Why it is structured this way

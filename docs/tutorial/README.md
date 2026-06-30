@@ -10,5 +10,5 @@ Tutorials should show the smallest complete path from install to success.
 - [Examples Workspace](./examples-workspace.md) - orient yourself in the instructional example set
 - [Mock Mail Server](./mock-mail-server.md) - run the local SMTP and HTTP test endpoint
 - [Node Brochure](./node-brochure.md) - build the ACME Inc. brochure site against the mock SMTP server
-- [Cloudflare React](./cloudflare-react.md) - build the Cloudflare Pages example against the mock HTTP server
+- [Cloudflare React on Next.js](./cloudflare-react.md) - build the Next.js example against the mock HTTP server
 - [Lambda Relay](./lambda-relay.md) - review the placeholder AWS Lambda relay scaffold

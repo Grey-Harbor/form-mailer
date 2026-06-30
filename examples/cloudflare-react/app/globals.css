@@ -1,0 +1,206 @@
+:root {
+  color-scheme: light;
+  --bg: #f7f1ea;
+  --bg-accent: #e8ddd0;
+  --panel: #fffaf4;
+  --ink: #1f2630;
+  --muted: #5b6674;
+  --line: #d9cfbf;
+  --shadow: 0 18px 40px rgba(35, 42, 54, 0.08);
+  --accent: #14566b;
+  --accent-strong: #0f3d4d;
+  --accent-soft: #edf4f7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at top, rgba(20, 86, 107, 0.12), transparent 35%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-accent) 100%);
+  font-family: Inter, Arial, Helvetica, sans-serif;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.28), transparent 35%),
+    linear-gradient(240deg, rgba(255, 255, 255, 0.16), transparent 28%);
+  opacity: 0.65;
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.page {
+  position: relative;
+  z-index: 0;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 32px 20px 72px;
+  display: grid;
+  gap: 20px;
+}
+
+.hero,
+.card {
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 28px;
+  background: rgba(255, 250, 244, 0.92);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+
+.hero {
+  padding: 52px 30px 48px;
+  color: white;
+  background:
+    linear-gradient(135deg, rgba(14, 52, 64, 0.95) 0%, rgba(20, 86, 107, 0.96) 100%),
+    linear-gradient(135deg, #17313d 0%, #1e5f74 100%);
+}
+
+.card {
+  padding: 28px;
+}
+
+.hero h1,
+.card h2,
+.card p {
+  margin-top: 0;
+}
+
+.hero h1 {
+  max-width: 12ch;
+  margin-bottom: 14px;
+  font-size: clamp(2.8rem, 5vw, 5.25rem);
+  line-height: 0.94;
+  letter-spacing: -0.04em;
+}
+
+.hero p,
+.card p {
+  line-height: 1.7;
+}
+
+.eyebrow {
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  font-size: 0.78rem;
+  opacity: 0.82;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.form {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.form label {
+  display: grid;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.form input,
+.form textarea,
+.form button {
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  padding: 14px 16px;
+}
+
+.form input,
+.form textarea {
+  background: #fff;
+}
+
+.form textarea {
+  min-height: 148px;
+  resize: vertical;
+}
+
+.form input:focus,
+.form textarea:focus,
+.form button:focus-visible {
+  outline: 3px solid rgba(20, 86, 107, 0.22);
+  outline-offset: 2px;
+}
+
+.form button {
+  justify-self: start;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  padding-inline: 20px;
+  box-shadow: 0 10px 22px rgba(20, 86, 107, 0.18);
+}
+
+.form button:hover {
+  background: var(--accent-strong);
+}
+
+.form button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.turnstile-widget {
+  min-height: 78px;
+  display: flex;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.success {
+  color: #0b6b3a;
+}
+
+.error {
+  color: #a3232b;
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding-inline: 16px;
+    padding-bottom: 56px;
+  }
+
+  .hero,
+  .card {
+    border-radius: 24px;
+  }
+
+  .hero {
+    padding: 40px 22px 34px;
+  }
+
+  .card {
+    padding: 22px;
+  }
+}
