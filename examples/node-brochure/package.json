@@ -1,6 +1,7 @@
 {
   "name": "node-brochure-example",
   "private": true,
+  "version": "0.3.0",
   "type": "module",
   "scripts": {
     "dev": "tsx src/index.ts",
