@@ -1,12 +1,12 @@
 # Cloudflare React
 
-`cloudflare-react` is the fully deployable Cloudflare Pages proof of concept.
+`cloudflare-react` is a Next.js proof of concept that stays deployable on Cloudflare Pages.
 
 It is built to teach the flow clearly:
 
 - stacked hero, content, and contact sections
-- a React front end in TypeScript
-- a Pages function that sends mail through the current distributed `@greyharbor/form-mailer` package
+- a React front end in TypeScript and the Next.js app router
+- a Cloudflare Pages function that sends mail through the current distributed `@greyharbor/form-mailer` package
 - mock-server HTTP delivery during local development
 - Turnstile protection on the contact path
 
@@ -35,23 +35,26 @@ The Turnstile widget uses the official Cloudflare testing flow when you need a d
 
 ## Environment handling
 
-There are two separate local env paths:
+There are two local env paths:
 
-- `npm run pages:dev` reads `FORM_MAILER_*` and `TURNSTILE_SECRET_KEY` from `.dev.vars` through Wrangler
-- `npm run dev` reads `TURNSTILE_SITE_KEY` from `.dev.vars` first, then from the shell through Vite's `TURNSTILE_` prefix
+- `.env.local` gives Next.js the public `NEXT_PUBLIC_TURNSTILE_SITE_KEY` during `npm run dev` and `npm run build`
+- `.dev.vars` gives Wrangler the server-side `FORM_MAILER_*` values and `TURNSTILE_SECRET_KEY` during `npm run pages:dev`
 
 That split keeps delivery secrets on the Pages side and keeps the client bundle limited to the public Turnstile site key.
 
-If you need the dummy Turnstile values, use the Cloudflare testing guidance above. The public test site key belongs in `TURNSTILE_SITE_KEY`; the matching secret belongs in `.dev.vars` for `npm run pages:dev`.
+If you need the dummy Turnstile values, use the Cloudflare testing guidance above. The public test site key belongs in `NEXT_PUBLIC_TURNSTILE_SITE_KEY`; the matching secret belongs in `.dev.vars` for local Pages previews and in your Pages project secrets for deployment.
 
 The contact form keeps a hidden honeypot field so the Pages function can validate the submission with `form-mailer` before any delivery work begins.
 
 ## Commands
 
-- `npm run pages:dev` for local development through the npm wrapper around Wrangler
-- `npm run pages:deploy` for preview and production deployment through Wrangler
+- `npm run dev` for local development
+- `npm run build` to export the static Next.js app into `out/`
+- `npm run pages:dev` to preview the static app plus Pages Functions through Wrangler
+- `npm run pages:deploy` to deploy the exported app to Cloudflare Pages
 
 ## Source
 
-- React app: [`src/App.tsx`](./src/App.tsx)
+- React app: [`app/page.tsx`](./app/page.tsx)
+- Contact form: [`components/ContactForm.tsx`](./components/ContactForm.tsx)
 - Pages function: [`functions/api/contact.ts`](./functions/api/contact.ts)

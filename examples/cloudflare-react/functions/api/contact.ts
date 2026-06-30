@@ -119,6 +119,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       ...(env.FORM_MAILER_HTTP_TOKEN ? { token: env.FORM_MAILER_HTTP_TOKEN } : {}),
     },
   });
+
   try {
     const sendResult = await sendWithTimeout(mailer.send(submission), MAIL_SEND_TIMEOUT_MS);
 

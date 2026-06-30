@@ -6,6 +6,11 @@ coverage/
 *.env.var
 *.dev.vars
 **/.dev.vars
+*.env.local
+**/.env.local
+**/.next/
+out/
+**/out/
 **/.wrangler/
 .DS_Store
 npm-debug.log*
