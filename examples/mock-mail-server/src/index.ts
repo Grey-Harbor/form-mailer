@@ -32,6 +32,43 @@ function indent(value: string, prefix = '  '): string {
     .join('\n');
 }
 
+function decodeHtmlEntities(value: string): string {
+  return value
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'");
+}
+
+function normalizeWhitespace(value: string): string {
+  return value
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .split('\n')
+    .map((line) => line.trimEnd())
+    .join('\n')
+    .trim();
+}
+
+function formatHtmlForStdout(html: string): string {
+  const withBreaks = html
+    .replace(/<\s*br\s*\/?>/gi, '\n')
+    .replace(/<\s*\/\s*(p|div|section|article|header|footer|li|ul|ol|h[1-6])\s*>/gi, '\n')
+    .replace(/<\s*(p|div|section|article|header|footer|li|ul|ol|h[1-6])\b[^>]*>/gi, '\n')
+    .replace(/<\s*\/\s*td\s*>/gi, ' ')
+    .replace(/<\s*\/\s*tr\s*>/gi, '\n')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<[^>]+>/g, '');
+
+  const decoded = decodeHtmlEntities(withBreaks);
+  return normalizeWhitespace(decoded) || '(empty)';
+}
+
 function normalizeHeaders(rawHeaders: string): Record<string, string> {
   const headers: Record<string, string> = {};
   for (const line of rawHeaders.split('\n')) {
@@ -60,7 +97,7 @@ function normalizeStoredMessage(message: StoredMessage): string {
   ];
 
   if (message.html) {
-    bodyLines.push('html:', indent(message.html));
+    bodyLines.push('html:', indent(formatHtmlForStdout(message.html)));
   }
 
   bodyLines.push('===============================');
