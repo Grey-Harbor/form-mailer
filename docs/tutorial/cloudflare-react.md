@@ -16,7 +16,7 @@ The React UI gathers the form data, then the Cloudflare Pages function performs 
 
 ## Form-mailer usage
 
-The Pages function should use `form-mailer` and send through the mock server’s HTTP endpoint.
+The Pages function should use `form-mailer` and send through the SMTP2GO relay contract used in `.dev.vars.example`.
 
 The browser bundle should stay focused on presentation and form collection, while the server side owns the mail delivery decision.
 
@@ -46,6 +46,8 @@ When both a file value and a system env value exist, the live environment should
 The split keeps delivery secrets on the Pages side and keeps the browser bundle limited to the public Turnstile site key.
 
 If you need Cloudflare's dummy Turnstile values for local testing, the public site key goes in `NEXT_PUBLIC_TURNSTILE_SITE_KEY` and the matching secret goes in `TURNSTILE_SECRET_KEY`, whether you provide them through system env or the optional local files.
+
+The example relays the API key from `FORM_MAILER_HTTP_TOKEN` as the `X-Smtp2go-Api-Key` header so the Pages function can talk to SMTP2GO without exposing the token to the browser bundle.
 
 ## Deployment commands
 

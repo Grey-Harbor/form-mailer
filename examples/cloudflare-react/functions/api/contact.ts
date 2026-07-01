@@ -1,5 +1,10 @@
 import { createFormMailer } from '@greyharbor/form-mailer/worker';
-import type { FormMailSubmission, SendMailOutcome } from '@greyharbor/form-mailer/worker';
+import type {
+  FormMailSubmission,
+  OutgoingMail,
+  SendMailOutcome,
+  TransportSendResult,
+} from '@greyharbor/form-mailer/worker';
 
 interface Env {
   FORM_MAILER_FROM: string;
@@ -14,8 +19,15 @@ interface TurnstileVerificationResult {
   'error-codes'?: string[];
 }
 
+interface Smtp2GoSendResponse {
+  data?: {
+    email_id?: string;
+  };
+}
+
 const TURNSTILE_TIMEOUT_MS = 10_000;
 const MAIL_SEND_TIMEOUT_MS = 10_000;
+const SMTP2GO_API_KEY_HEADER = 'X-Smtp2go-Api-Key';
 
 function json(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body, null, 2), {
@@ -76,6 +88,35 @@ async function sendWithTimeout(promise: Promise<SendMailOutcome>, timeoutMs: num
   }
 }
 
+function extractEmailAddress(value: string): string {
+  const match = value.match(/<([^>]+)>/);
+  return (match?.[1] ?? value).trim();
+}
+
+function buildSmtp2GoRequest(message: OutgoingMail): { body: string } {
+  const payload: Record<string, unknown> = {
+    sender: extractEmailAddress(message.from),
+    to: message.to,
+    subject: message.subject,
+    text_body: message.text,
+  };
+
+  if (message.html) {
+    payload.html_body = message.html;
+  }
+
+  return {
+    body: JSON.stringify(payload),
+  };
+}
+
+async function parseSmtp2GoResponse(response: Response): Promise<TransportSendResult> {
+  const payload = (await response.json().catch(() => undefined)) as Smtp2GoSendResponse | undefined;
+  const messageId = payload?.data?.email_id;
+
+  return typeof messageId === 'string' ? { messageId } : {};
+}
+
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   if (!env.TURNSTILE_SECRET_KEY) {
     return json(500, {
@@ -110,13 +151,22 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     });
   }
 
+  if (!env.FORM_MAILER_HTTP_TOKEN) {
+    return json(500, {
+      ok: false,
+      error: 'FORM_MAILER_HTTP_TOKEN is required for the SMTP2GO relay.',
+    });
+  }
+
   const mailer = createFormMailer({
     from: env.FORM_MAILER_FROM,
     to: [env.FORM_MAILER_TO],
     subject: 'ACME Inc. brochure inquiry',
     http: {
       url: env.FORM_MAILER_HTTP_URL,
-      ...(env.FORM_MAILER_HTTP_TOKEN ? { token: env.FORM_MAILER_HTTP_TOKEN } : {}),
+      headers: { [SMTP2GO_API_KEY_HEADER]: env.FORM_MAILER_HTTP_TOKEN },
+      mapRequest: buildSmtp2GoRequest,
+      parseResponse: parseSmtp2GoResponse,
     },
   });
 
