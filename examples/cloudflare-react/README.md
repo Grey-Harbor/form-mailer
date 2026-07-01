@@ -7,7 +7,7 @@ It is built to teach the flow clearly:
 - stacked hero, content, and contact sections
 - a React front end in TypeScript and the Next.js app router
 - a Cloudflare Pages function that sends mail through the current distributed `@greyharbor/form-mailer` package
-- mock-server HTTP delivery during local development
+- SMTP2GO relay delivery during local development
 - Turnstile protection on the contact path
 
 ## Quick Start
@@ -51,6 +51,8 @@ That split keeps delivery secrets on the Pages side and keeps the client bundle 
 If you need the dummy Turnstile values, use the Cloudflare testing guidance above. The public test site key belongs in `NEXT_PUBLIC_TURNSTILE_SITE_KEY`; the matching secret belongs in `TURNSTILE_SECRET_KEY`. You can provide them either through system env or the optional local files.
 
 The contact form keeps a hidden honeypot field so the Pages function can validate the submission with `form-mailer` before any delivery work begins.
+
+The Pages function maps `FORM_MAILER_HTTP_TOKEN` to SMTP2GO's `X-Smtp2go-Api-Key` header and translates the outgoing mail into SMTP2GO's REST payload shape before sending.
 
 ## Commands
 
