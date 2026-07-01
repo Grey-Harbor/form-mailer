@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { loadTurnstileScript } from './lib/turnstile';
 
 interface TurnstileWidgetProps {
-  siteKey: string;
+  siteKey?: string | null;
   onToken: (token: string) => void;
 }
 
@@ -17,6 +17,10 @@ export function TurnstileWidget({ siteKey, onToken }: TurnstileWidgetProps) {
     let cancelled = false;
 
     async function mountWidget() {
+      if (siteKey == null) {
+        return;
+      }
+
       if (!siteKey.trim()) {
         onToken('');
         setStatus('missing');
@@ -68,8 +72,8 @@ export function TurnstileWidget({ siteKey, onToken }: TurnstileWidgetProps) {
   if (status === 'missing') {
     return (
       <p className="muted">
-        Turnstile site key is missing. Set <code>NEXT_PUBLIC_TURNSTILE_SITE_KEY</code> before running the client,
-        and use the testing page linked in the docs if you need a dummy public key.
+        Turnstile site key is missing. Set <code>TURNSTILE_SITE_KEY</code> in your runtime environment or in
+        <code>.dev.vars</code>, and use the testing page linked in the docs if you need a dummy public key.
       </p>
     );
   }

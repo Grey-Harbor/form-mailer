@@ -39,16 +39,15 @@ All required values can come from system environment variables.
 
 The example files are optional local helpers:
 
-- system env can supply `NEXT_PUBLIC_TURNSTILE_SITE_KEY` for `npm run build`, `npm run pages:dev`, and the optional UI-only `npm run dev:ui`
-- system env can also supply `FORM_MAILER_*` and `TURNSTILE_SECRET_KEY` for `npm run pages:dev`
-- `.env.local` is an optional convenience file for the public Next.js variable
-- `.dev.vars` is an optional Wrangler convenience file for local Pages previews
+- system env can supply `FORM_MAILER_*`, `TURNSTILE_SITE_KEY`, and `TURNSTILE_SECRET_KEY` for `npm run pages:dev`
+- `.dev.vars` is the recommended local file for Pages previews
+- `npm run dev:ui` is UI-only and does not load the Pages runtime env endpoint
 
 When both a file value and a system env value exist, the live environment should be treated as the source of truth.
 
-That split keeps delivery secrets on the Pages side and keeps the client bundle limited to the public Turnstile site key.
+That split keeps delivery secrets on the Pages side and keeps the client bundle free of the Turnstile site key at build time.
 
-If you need the dummy Turnstile values, use the Cloudflare testing guidance above. The public test site key belongs in `NEXT_PUBLIC_TURNSTILE_SITE_KEY`; the matching secret belongs in `TURNSTILE_SECRET_KEY`. You can provide them either through system env or the optional local files.
+In this example, the public test site key belongs in `TURNSTILE_SITE_KEY`, not `NEXT_PUBLIC_TURNSTILE_SITE_KEY`. The matching secret belongs in `TURNSTILE_SECRET_KEY`. Use `.dev.vars` for local Pages previews so the value stays out of the static export.
 
 The contact form keeps a hidden honeypot field so the Pages function can validate the submission with `form-mailer` before any delivery work begins.
 

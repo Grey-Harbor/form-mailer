@@ -36,16 +36,16 @@ The mailer configuration should stay on `form-mailer`'s own `FORM_MAILER_*` cont
 
 That means:
 
-- `npm run build` and `npm run pages:dev` can read `NEXT_PUBLIC_TURNSTILE_SITE_KEY` from system env or the optional `.env.local` file so Next.js can render the static site
-- `npm run pages:dev` can read `FORM_MAILER_*` and `TURNSTILE_SECRET_KEY` from system env, and the example also keeps `.dev.vars` as an optional local convenience path for Wrangler
+- `npm run build` no longer needs the Turnstile public key at build time because the client loads it from the Pages runtime endpoint after the page ships
+- `npm run pages:dev` can read `FORM_MAILER_*`, `TURNSTILE_SITE_KEY`, and `TURNSTILE_SECRET_KEY` from system env, and the example keeps `.dev.vars` as the local convenience path for Wrangler
 
 If you want to preview only the front end without the Pages function, `npm run dev:ui` runs the raw Next.js app. That mode is useful for layout work, but it is not the end-to-end contact flow.
 
 When both a file value and a system env value exist, the live environment should be treated as the source of truth.
 
-The split keeps delivery secrets on the Pages side and keeps the browser bundle limited to the public Turnstile site key.
+The split keeps delivery secrets on the Pages side and keeps the browser bundle free of the public Turnstile site key at build time.
 
-If you need Cloudflare's dummy Turnstile values for local testing, the public site key goes in `NEXT_PUBLIC_TURNSTILE_SITE_KEY` and the matching secret goes in `TURNSTILE_SECRET_KEY`, whether you provide them through system env or the optional local files.
+If you need Cloudflare's dummy Turnstile values for local testing, the public site key goes in `TURNSTILE_SITE_KEY` and the matching secret goes in `TURNSTILE_SECRET_KEY`, whether you provide them through system env or `.dev.vars`.
 
 The example relays the API key from `FORM_MAILER_HTTP_TOKEN` as the `X-Smtp2go-Api-Key` header so the Pages function can talk to SMTP2GO without exposing the token to the browser bundle.
 
