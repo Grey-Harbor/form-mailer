@@ -2,6 +2,20 @@ interface Env {
   TURNSTILE_SITE_KEY?: string | undefined;
 }
 
+function resolveTurnstileSiteKey(env: Env): string {
+  if (env.TURNSTILE_SITE_KEY) {
+    return env.TURNSTILE_SITE_KEY;
+  }
+
+  const systemEnv = (globalThis as typeof globalThis & {
+    process?: {
+      env?: Record<string, string | undefined>;
+    };
+  }).process?.env;
+
+  return systemEnv?.TURNSTILE_SITE_KEY ?? '';
+}
+
 function json(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body, null, 2), {
     status,
@@ -14,6 +28,6 @@ function json(status: number, body: unknown): Response {
 
 export function onRequestGet({ env }: { env: Env }) {
   return json(200, {
-    TURNSTILE_SITE_KEY: env.TURNSTILE_SITE_KEY ?? '',
+    TURNSTILE_SITE_KEY: resolveTurnstileSiteKey(env),
   });
 }
