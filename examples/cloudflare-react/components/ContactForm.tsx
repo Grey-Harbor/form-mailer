@@ -1,16 +1,35 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
-import { resolveClientEnv } from './lib/env';
+import { useEffect, useState, type FormEvent } from 'react';
+import { loadClientEnv, type CloudflareReactEnv } from './lib/env';
 import { TurnstileWidget } from './TurnstileWidget';
-
-const env = resolveClientEnv();
 
 export function ContactForm() {
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [message, setMessage] = useState('');
   const [turnstileToken, setTurnstileToken] = useState('');
   const [turnstileKey, setTurnstileKey] = useState(0);
+  const [env, setEnv] = useState<CloudflareReactEnv | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    loadClientEnv()
+      .then((loadedEnv) => {
+        if (!cancelled) {
+          setEnv(loadedEnv);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setEnv({});
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -74,7 +93,11 @@ export function ContactForm() {
           <textarea name="message" required />
         </label>
         <input type="hidden" name="turnstileToken" value={turnstileToken} />
-        <TurnstileWidget key={turnstileKey} siteKey={env.TURNSTILE_SITE_KEY ?? ''} onToken={setTurnstileToken} />
+        <TurnstileWidget
+          key={turnstileKey}
+          siteKey={env === null ? null : env.TURNSTILE_SITE_KEY ?? ''}
+          onToken={setTurnstileToken}
+        />
         <button type="submit" disabled={status === 'sending' || !turnstileToken}>
           {status === 'sending' ? 'Sending...' : 'Send message'}
         </button>
